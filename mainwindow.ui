@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuDatei">
+    <property name="title">
+     <string>Datei</string>
+    </property>
+    <addaction name="actionOeffnen"/>
+    <addaction name="actionSchwester_Projekt_hinzufuegen"/>
+    <addaction name="actionSpeichern"/>
+    <addaction name="actionDrucken"/>
+    <addaction name="actionEinstellungen"/>
+    <addaction name="actionFinish_File"/>
+   </widget>
+   <widget class="QMenu" name="menuDatenbank">
+    <property name="title">
+     <string>Datenbank</string>
+    </property>
+    <addaction name="action_Import_Rpl"/>
+    <addaction name="actionL_sche_R_stplan"/>
+    <addaction name="actionRecoverDB"/>
+   </widget>
+   <addaction name="menuDatei"/>
+   <addaction name="menuDatenbank"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSpeichern">
+   <property name="text">
+    <string>Speichern</string>
+   </property>
+  </action>
+  <action name="actionDrucken">
+   <property name="text">
+    <string>Drucken</string>
+   </property>
+  </action>
+  <action name="actionSchwester_Projekt_hinzufuegen">
+   <property name="text">
+    <string>Schwester Projekt hinzufügen</string>
+   </property>
+  </action>
+  <action name="actionEinstellungen">
+   <property name="text">
+    <string>Einstellungen</string>
+   </property>
+  </action>
+  <action name="action_Import_Rpl">
+   <property name="text">
+    <string>Import Rüstplan</string>
+   </property>
+  </action>
+  <action name="actionRecoverDB">
+   <property name="text">
+    <string>Datenbank wiederherstellen</string>
+   </property>
+  </action>
+  <action name="actionL_sche_R_stplan">
+   <property name="text">
+    <string>Lösche Rüstplan</string>
+   </property>
+  </action>
+  <action name="actionOeffnen">
+   <property name="text">
+    <string>Öffnen</string>
+   </property>
+  </action>
+  <action name="actionFinish_File">
+   <property name="text">
+    <string>Finish File</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

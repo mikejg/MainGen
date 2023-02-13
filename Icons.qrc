@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Icons/Load</file>
+        <file>Icons/Open.svg</file>
+        <file>Icons/Save.svg</file>
+        <file>Icons/Print.svg</file>
+        <file>Icons/checklist.svg</file>
+    </qresource>
+</RCC>
