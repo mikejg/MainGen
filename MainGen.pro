@@ -17,6 +17,7 @@ SOURCES += \
     dialogrecover.cpp \
     holder.cpp \
     holderlist.cpp \
+    license.cpp \
     main.cpp \
     parser_programm.cpp \
     tool.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     dialogrecover.h \
     holder.h \
     holderlist.h \
+    license.h \
     parser_programm.h \
     tool.h \
     toollist.h \

@@ -31,6 +31,7 @@
 #include "tableprinter.h"
 #include "dbManager.h"
 #include "dbMainManager.h"
+#include "license.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -76,7 +77,7 @@ private:
     QString string_Spannung;
     QString string_SpX;
     QString string_WiederholFertigung;
-    QString string_NextCheck;
+
 
     QList<QString> list_ToolID;
     QList<QString> list_ToolDescription;
@@ -100,8 +101,7 @@ private:
     ToolList* toolList_AllProjects;
 
     QList<ToolList*> list_SchwesterProjekte;
-    QNetworkRequest req;
-    QNetworkReply *reply;
+
 
     Parser* parser;
     Parser_WZM* parser_Magazin;
@@ -147,6 +147,6 @@ public slots:
     void slot_ShowSettings(bool);
     void slot_Log(QString);
     void slot_Err(QString);
-    void slotMetaDataChanged();
+
 };
 #endif // MAINWINDOW_H

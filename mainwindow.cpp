@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
     string_VorlageSp2 = settings->value("VorlageSp2", "").toString();
     string_MagazinDir = settings->value("MagazinDir", "").toString();
     string_WerkzeugDB_orginal = settings->value("WerkzeugDB", "").toString();
-    string_NextCheck = settings->value("NextCheck","").toString();
+
 
     QDateTime dateTime = QDateTime::currentDateTime();
     dateTime = dateTime.addDays(2);
@@ -73,11 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
     dialogWrite = new DialogWrite(this);
 
 
-    QNetworkAccessManager *nam = new QNetworkAccessManager(this);
 
-    req = QNetworkRequest(QUrl("http://www.gareiss.org/goeltenbodt.txt"));
-    reply = nam->get(req);
-    connect(reply, SIGNAL(metaDataChanged()), this, SLOT(slotMetaDataChanged()));
 
     connect(dialogStart, SIGNAL(allValid()),this, SLOT(generate_MPF()));
     connect(ui->actionEinstellungen, SIGNAL(triggered(bool)), this, SLOT(slot_ShowSettings(bool)));
@@ -1015,9 +1011,3 @@ QString MainWindow::formatString(QString str)
     return str;
 }
 
-void MainWindow::slotMetaDataChanged()
-{
-    qDebug() << Q_FUNC_INFO;
-    qDebug() << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
-
-}
