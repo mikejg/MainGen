@@ -106,6 +106,7 @@ private:
     Parser* parser;
     Parser_WZM* parser_Magazin;
     Parser_Programm* parser_Programm;
+    License* license;
 
     enum Marker {KopfStart, KopfEnd, keinMarker};
     Marker marker;
@@ -147,6 +148,7 @@ public slots:
     void slot_ShowSettings(bool);
     void slot_Log(QString);
     void slot_Err(QString);
+    void slot_LicenseFaild();
 
 };
 #endif // MAINWINDOW_H

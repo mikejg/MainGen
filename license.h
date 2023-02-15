@@ -5,6 +5,7 @@
 #include <QSettings>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QDateTime>
 
 class License : public QObject
 {
@@ -13,12 +14,19 @@ private:
     QNetworkRequest req;
     QNetworkReply *reply;
     QString string_NextCheck;
+    QSettings* settings;
+    QDateTime dateTime_NextCheck;
+    QDateTime dateTime_CurrentTime;
 
     void checkRemoteFile();
 public:
     explicit License(QObject *parent = nullptr);
-    void checkLicense(QSettings* s);
+    void checkLicense();
+    void setSettings(QSettings* s) {settings = s;}
+
 signals:
+    void sig_LicenseFailed();
+
 public slots:
     void slotMetaDataChanged();
 };

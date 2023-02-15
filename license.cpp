@@ -6,16 +6,27 @@ License::License(QObject *parent)
 
 }
 
-void License::checkLicense(QSettings* settings)
+void License::checkLicense()
 {
   qDebug() << Q_FUNC_INFO;
   string_NextCheck = settings->value("NextCheck","").toString();
+  qDebug() << "NextCheck: " << string_NextCheck;
   if(string_NextCheck.isEmpty())
   {
       qDebug() << "if(string_NextCheck.isEmpty())";
       checkRemoteFile();
       return;
   }
+
+  dateTime_CurrentTime = QDateTime::currentDateTime();
+  dateTime_NextCheck = QDateTime::fromString(string_NextCheck);
+  if(dateTime_CurrentTime > dateTime_NextCheck)
+  {
+      qDebug() << "if(dateTime_CurrentTime > dateTime_NextCheck)";
+      checkRemoteFile();
+  }
+
+  return;
 }
 
 void License::checkRemoteFile()
@@ -30,7 +41,17 @@ void License::checkRemoteFile()
 
 void License::slotMetaDataChanged()
 {
-    qDebug() << Q_FUNC_INFO;
-    qDebug() << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+    int int_Status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
+    qDebug() << Q_FUNC_INFO;
+    qDebug() << "Status: " << int_Status;
+    if(int_Status == 200)
+    {
+       dateTime_NextCheck = QDateTime::currentDateTime().addDays(30);
+       string_NextCheck = dateTime_NextCheck.toString();
+       settings->setValue("NextCheck", string_NextCheck);
+       return;
+    }
+
+    emit sig_LicenseFailed();
 }

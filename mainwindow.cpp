@@ -45,11 +45,6 @@ MainWindow::MainWindow(QWidget *parent)
     string_MagazinDir = settings->value("MagazinDir", "").toString();
     string_WerkzeugDB_orginal = settings->value("WerkzeugDB", "").toString();
 
-
-    QDateTime dateTime = QDateTime::currentDateTime();
-    dateTime = dateTime.addDays(2);
-    settings->setValue("NextCheck", dateTime.toString());
-
     dialogSettings = new DialogSettings(this);
     dialogSettings->set_Settings(settings);
     dialogSettings->set_ProgrammDir(string_ProgrammDir);
@@ -72,7 +67,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     dialogWrite = new DialogWrite(this);
 
+    /* Zum testen der Überprüfung */
+    /*QDateTime dateTime = QDateTime::currentDateTime();
+    dateTime = dateTime.addDays(-2);
+    settings->setValue("NextCheck", dateTime.toString());*/
 
+    //settings->remove("NextCheck");
+    license = new License(this);
+    license->setSettings(settings);
 
 
     connect(dialogStart, SIGNAL(allValid()),this, SLOT(generate_MPF()));
@@ -107,6 +109,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(parser_Programm, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
     connect(parser_Magazin, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
     connect(parser_Magazin, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
+    connect(license,SIGNAL(sig_LicenseFailed()), this, SLOT(slot_LicenseFaild()));
+
     //dialogStart->show();
 
     if(!dialogSettings->checkSettings())
@@ -126,6 +130,7 @@ MainWindow::MainWindow(QWidget *parent)
     //toolList_Top100->sort_Top100();
     //showTop100();
     showMagazin();
+    license->checkLicense();
 }
 
 MainWindow::~MainWindow()
@@ -939,6 +944,13 @@ void MainWindow::slot_ShowSettings(bool b)
 {
     Q_UNUSED(b);
     dialogSettings->show();
+}
+
+void MainWindow::slot_LicenseFaild()
+{
+    dialogStart->close();
+    slot_Err("Keine gültige Lizenz");
+    QTimer::singleShot(5000, this, SLOT(close()));
 }
 
 void MainWindow::writeG55()
