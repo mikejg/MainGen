@@ -15,6 +15,7 @@ SOURCES += \
     dialogStart.cpp \
     dialogWrite.cpp \
     dialogrecover.cpp \
+    dialogrepetition.cpp \
     holder.cpp \
     holderlist.cpp \
     license.cpp \
@@ -35,6 +36,7 @@ HEADERS += \
     dialogStart.h \
     dialogWrite.h \
     dialogrecover.h \
+    dialogrepetition.h \
     holder.h \
     holderlist.h \
     license.h \
@@ -52,6 +54,7 @@ FORMS += \
     dialogStart.ui \
     dialogWrite.ui \
     dialogrecover.ui \
+    dialogrepetition.ui \
     mainwindow.ui
 
 # Default rules for deployment.

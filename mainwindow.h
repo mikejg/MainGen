@@ -23,6 +23,7 @@
 #include "dialogStart.h"
 #include "dialogWrite.h"
 #include "dialogrecover.h"
+#include "dialogrepetition.h"
 #include "toollist.h"
 #include "parser.h"
 #include "parser_wzm.h"
@@ -50,6 +51,7 @@ private:
     DialogStart* dialogStart;
     DialogRecover* dialogRecover;
     DialogWrite* dialogWrite;
+    DialogRepetition* dialogRepetition;
 
     QFileDialog* fileDialog;
     TableModel *tableModel;
@@ -117,6 +119,7 @@ private:
     void finish_Rohteil_Kontrolle();
     void load_Programme();
     bool openFile(QString fileName);
+    void save_MPF(bool);
     void set_MainLayout();
     void set_Spannung(QString string_Vorlage);
     void showMagazin();
@@ -135,7 +138,7 @@ signals:
 
 public slots:
     void generate_MPF();
-    void save_MPF(bool);
+    void slot_Save(bool);
     void slot_CopyWerkzeugDB();
     void slot_CheckFiles(bool);
     void slot_Erstelle_Top100();
@@ -149,6 +152,6 @@ public slots:
     void slot_Log(QString);
     void slot_Err(QString);
     void slot_LicenseFaild();
-
+    void slot_RepetitionAccepted();
 };
 #endif // MAINWINDOW_H

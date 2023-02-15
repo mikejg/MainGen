@@ -66,6 +66,7 @@ MainWindow::MainWindow(QWidget *parent)
     dialogRecover->setParser(parser);
 
     dialogWrite = new DialogWrite(this);
+    dialogRepetition = new DialogRepetition(this);
 
     /* Zum testen der Überprüfung */
     /*QDateTime dateTime = QDateTime::currentDateTime();
@@ -79,8 +80,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(dialogStart, SIGNAL(allValid()),this, SLOT(generate_MPF()));
     connect(ui->actionEinstellungen, SIGNAL(triggered(bool)), this, SLOT(slot_ShowSettings(bool)));
-    connect(ui->actionSpeichern, SIGNAL(triggered(bool)), this,SLOT(save_MPF(bool)));
-    connect(action_Save, SIGNAL(triggered(bool)), this,SLOT(save_MPF(bool)));
+    connect(ui->actionSpeichern, SIGNAL(triggered(bool)), this,SLOT(slot_Save(bool)));
+    connect(action_Save, SIGNAL(triggered(bool)), this,SLOT(slot_Save(bool)));
     connect(ui->actionDrucken, SIGNAL(triggered(bool)), this, SLOT(slot_Print(bool)));
     connect(action_Print,      SIGNAL(triggered(bool)), this, SLOT(slot_Print(bool)));
     connect(ui->actionSchwester_Projekt_hinzufuegen, SIGNAL(triggered(bool)), this, SLOT(slot_SchwesterProjekt(bool)));
@@ -93,6 +94,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(dialogSettings, SIGNAL(settingsOK()), dialogStart, SLOT(showDialog()));
     connect(dialogSettings, SIGNAL(settingsOK()), this, SLOT(slot_CopyWerkzeugDB()));
 
+    connect(dialogRepetition, SIGNAL(accepted()), this, SLOT(slot_RepetitionAccepted()));
     //connect(this, SIGNAL(send_Value(QString, int)), dialogRecover, SLOT(slot_setValue(QString,int)));
 
     connect(dbManager, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
@@ -319,6 +321,27 @@ bool MainWindow::openFile(QString fileName)
         return false;
 }
 
+void MainWindow::slot_Save(bool b)
+{
+    Q_UNUSED(b);
+
+    /* Wenn es keine Wiederholfertigung ist schreibe das Projekt in die Datenbank */
+    if(string_WiederholFertigung == "0")
+    {
+        save_MPF(true);
+        return;
+    }
+
+    dialogRepetition->show();
+    return;
+
+}
+
+void MainWindow::slot_RepetitionAccepted()
+{
+       qDebug() << Q_FUNC_INFO;
+}
+
 void MainWindow::save_MPF(bool b)
 {
     /*Erzeugt im Ordern Programme den Ordner ProjektName.WPD/SpannungX.WPD
@@ -327,7 +350,7 @@ void MainWindow::save_MPF(bool b)
      * Erstellt QDir dir_Programme mit dem Pfad 'Programme/E123456789.WPD/Spannung1.WPD'
     */
 
-    Q_UNUSED(b);
+    //Q_UNUSED(b);
     QString dst = string_ProgrammDir + "/" + string_ProjektName + ".WPD/" +
             string_ProjektName+ "_" + string_ProjektStand + "_" + string_SpX  + ".WPD";
     QString src = QDir::homePath() + "/MainGen/Vorlage.WPD/" + string_Spannung + ".WPD";
