@@ -45,6 +45,7 @@ DialogSettings::DialogSettings(QWidget *parent) :
     werkzeugDBLayout->addWidget(ui->toolButton_WerkzeugDB);
     centralLayout->addLayout(werkzeugDBLayout);
 
+    centralLayout->addWidget(ui->checkBox_Numbering);
     centralLayout->addWidget(ui->buttonBox);
 
     fileDialog = new QFileDialog(this);
@@ -126,13 +127,15 @@ void DialogSettings::writeSettings()
      this->show();
      return;
  }
+ bool bool_Numbering = ui->checkBox_Numbering->isChecked();
  settings->setValue("ProgrammDir",ui->lineEdit_Programme->text());
  settings->setValue("VorlageSp1",ui->lineEdit_Spannung1->text());
  settings->setValue("VorlageSp2",ui->lineEdit_Spannung2->text());
  settings->setValue("MagazinDir",ui->lineEdit_Magazin->text());
  settings->setValue("WerkzeugDB", ui->lineEdit_WerkzeugDB->text());
+ settings->setValue("Nummerierung", QVariant(bool_Numbering).toString());
 
- settingsOK();
+ emit settingsOK();
 }
 
 void DialogSettings::toolButton_Programme_clicked(bool b)
@@ -189,3 +192,6 @@ void DialogSettings::set_Magazin(QString s)
 
 void DialogSettings::set_WerkzeugDB(QString s)
 {ui->lineEdit_WerkzeugDB->setText(s);}
+
+void DialogSettings::set_Numbering(bool b)
+{ui->checkBox_Numbering->setChecked(b);}

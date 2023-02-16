@@ -34,6 +34,7 @@ public:
     void set_VorlageSp2(QString s);
     void set_Magazin(QString s);
     void set_WerkzeugDB(QString s);
+    void set_Numbering(bool b);
 
     bool checkSettings();
 signals:

@@ -26,7 +26,7 @@ public:
     void set_ProgrammDir(QString str) {string_ProgrammDir =str;}
     void set_Projekt(QString str) {string_Projekt =str;}
     void set_Settings(DialogStart* ds) {dialogStart = ds;}
-    void initDialog();
+    void initDialog(bool);
 private:
     Ui::DialogWrite *ui;
 
@@ -42,6 +42,7 @@ private:
     QStringList stringList_Programme;
 
     int counter;
+    bool bool_Numbering;
 
     Parser_Programm* parser_Programm;
     DialogStart* dialogStart;

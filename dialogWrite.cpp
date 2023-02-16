@@ -25,7 +25,7 @@ void DialogWrite::setValue(QString string, int val)
     this->show();
 }
 
-void DialogWrite::initDialog()
+void DialogWrite::initDialog(bool b)
 {
     /*Zähler wird auf Null gesetzt
      * Die Länge des Fortschritsbalken ist die anzahl der Programme
@@ -35,6 +35,7 @@ void DialogWrite::initDialog()
     ui->progressBar->setMaximum(stringList_Programme.size());
     this->show();
     timer->singleShot(0, this, SLOT(slot_nextProgramm()));
+    bool_Numbering = b;
 }
 
 void DialogWrite::slot_nextProgramm()
@@ -55,10 +56,21 @@ void DialogWrite::slot_nextProgramm()
         timer->singleShot(500, this, SLOT(slot_nextProgramm()));
     else
     {
-        QFile::copy(string_ProgrammDir + QDir::separator() + string_Projekt +".MPF",
+        if(!bool_Numbering)
+        {
+            QFile::copy(string_ProgrammDir + QDir::separator() + string_Projekt +".MPF",
                     string_DST + QDir::separator() + string_Projekt +".MPF");
-        file.setFileName(string_ProgrammDir + QDir::separator() + string_Projekt +".MPF");
-        file.remove();
+            file.setFileName(string_ProgrammDir + QDir::separator() + string_Projekt +".MPF");
+            file.remove();
+        }
+        else
+        {
+            QFile::copy(string_ProgrammDir + QDir::separator() + string_Projekt +".MPF",
+                    string_DST + QDir::separator() + "00_" + string_Projekt +".MPF");
+            file.setFileName(string_ProgrammDir + QDir::separator() + string_Projekt +".MPF");
+            file.remove();
+        }
+
         if(string_DST.contains("Sp1"))
         {
             finish_Antasten();

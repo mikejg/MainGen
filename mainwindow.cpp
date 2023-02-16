@@ -44,6 +44,8 @@ MainWindow::MainWindow(QWidget *parent)
     string_VorlageSp2 = settings->value("VorlageSp2", "").toString();
     string_MagazinDir = settings->value("MagazinDir", "").toString();
     string_WerkzeugDB_orginal = settings->value("WerkzeugDB", "").toString();
+    bool_Numbering = settings->value("Nummerierung").toBool();
+    qDebug() << "Numbering: " << bool_Numbering;
 
     dialogSettings = new DialogSettings(this);
     dialogSettings->set_Settings(settings);
@@ -52,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent)
     dialogSettings->set_VorlageSp2(string_VorlageSp2);
     dialogSettings->set_Magazin(string_MagazinDir);
     dialogSettings->set_WerkzeugDB(string_WerkzeugDB_orginal);
-
+    dialogSettings->set_Numbering(bool_Numbering);
 
     dialogStart = new DialogStart(this);
     dialogStart->setSettings(settings);
@@ -194,6 +196,7 @@ void MainWindow::generate_MPF()
     string_Projekt      = string_ProjektName;
     string_ProjektStand = dialogStart->lineEdit_ProjektStand->text();
     string_ProjektDir   = string_ProgrammDir + "/" + string_ProjektName + ".WPD";
+    bool_Numbering      = settings->value("Nummerierung").toBool();
 
     //qDebug() << "string_ProjektDir: " << string_ProjektDir;
     if(string_ProjektName.isEmpty())
@@ -274,13 +277,14 @@ void MainWindow::load_Programme()
          * Benenne die Datei um
          * Schreibe den kurzen Dateinamen in den String str*/
 
+        /*Fliegt erstmal raus
         if(str.length() > 31)
         {
             string_shortName = str.left(27) + ".spf";
             dir.rename(str, string_shortName);
             str = string_shortName;
         }
-
+        */
 
         tmp.append(str);
 
@@ -292,23 +296,29 @@ void MainWindow::load_Programme()
      * Schreibe alle Einträge von tmp in stringListProgramme*/
     tmp.sort();
     stringList_Programme.clear();
+
     foreach(QString str, tmp)
     {
-        //if(str.startsWith("0"))
-        //    str = str.right(str.length()-1);
-        string_shortName = str;
-        int_I = string_shortName.left(1).toInt(&bool_OK, 10);
-        while(bool_OK)
+        if(!bool_Numbering)
         {
-            string_shortName = string_shortName.right(string_shortName.length()-1);
+            string_shortName = str;
             int_I = string_shortName.left(1).toInt(&bool_OK, 10);
-            if(string_shortName.startsWith("_"))
+            while(bool_OK)
+            {
+                string_shortName = string_shortName.right(string_shortName.length()-1);
+                int_I = string_shortName.left(1).toInt(&bool_OK, 10);
+                if(string_shortName.startsWith("_"))
                 bool_OK = true;
-        }
+            }
 
-        //string_shortName = str.right(str.length()-3);
-        dir.rename(str, string_shortName);
-        stringList_Programme.append(string_shortName);
+
+            dir.rename(str, string_shortName);
+            stringList_Programme.append(string_shortName);
+        }
+        else
+        {
+            stringList_Programme.append(str);
+        }
     }
 }
 
@@ -340,9 +350,17 @@ void MainWindow::slot_Save(bool b)
 void MainWindow::slot_RepetitionAccepted()
 {
        qDebug() << Q_FUNC_INFO;
+       if(dialogRepetition->radioButton_Repetition->isChecked())
+       {
+           save_MPF(true);
+       }
+       else
+       {
+           save_MPF(false);
+       }
 }
 
-void MainWindow::save_MPF(bool b)
+void MainWindow::save_MPF(bool bool_Repetition)
 {
     /*Erzeugt im Ordern Programme den Ordner ProjektName.WPD/SpannungX.WPD
      *      Programme/E123456789.WPD/Spannung1.WPD
@@ -405,12 +423,14 @@ void MainWindow::save_MPF(bool b)
     }
     */
 
-    /*Übergibt dem Parser Ruestplaene/E123456789E01_Sp1.rpl und die ToolListe des Projects zum Speichern*/
-    parser->save(QDir::homePath()+ "/MainGen/Ruestplaene/" + string_Projekt + "_" + string_WiederholFertigung + ".rpl", toolList_Project);
+    if(bool_Repetition)
+    {
+        /*Übergibt dem Parser Ruestplaene/E123456789E01_Sp1.rpl und die ToolListe des Projects zum Speichern*/
+        parser->save(QDir::homePath()+ "/MainGen/Ruestplaene/" + string_Projekt + "_" + string_WiederholFertigung + ".rpl", toolList_Project);
 
-    /*Übergibt dem DBManager den Projektnamen und die toolList zum Eintragen*/
-    dbManager->insertProject(string_Projekt + "_" + string_WiederholFertigung, toolList_Project);
-
+        /*Übergibt dem DBManager den Projektnamen und die toolList zum Eintragen*/
+        dbManager->insertProject(string_Projekt + "_" + string_WiederholFertigung, toolList_Project);
+    }
 
     /*Kopiert den Ordner Vorlagen.WPD/Spannung1.WPD nach
      * Programme/E123456789.WPD/Spannung1.WPD*/
@@ -430,7 +450,7 @@ void MainWindow::save_MPF(bool b)
     dialogWrite->set_Settings(dialogStart);
 
     /*Starte DialogWrite*/
-    dialogWrite->initDialog();
+    dialogWrite->initDialog(bool_Numbering);
     return;
 
     //finish_Antasten();

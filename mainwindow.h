@@ -112,6 +112,7 @@ private:
 
     enum Marker {KopfStart, KopfEnd, keinMarker};
     Marker marker;
+    bool bool_Numbering;
 
     void erstelle_Magazin();
 
