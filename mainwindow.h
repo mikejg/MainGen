@@ -127,6 +127,7 @@ private:
     void showTop100();
     void showTable();
     void writeG55();
+    void disableAll();
     //void textEdit_append(QString);
     QString formatString(QString);
 
@@ -154,5 +155,8 @@ public slots:
     void slot_Err(QString);
     void slot_LicenseFaild();
     void slot_RepetitionAccepted();
+    void slot_DifferentProjectFound();
+    void slot_DialogStartRejected();
+
 };
 #endif // MAINWINDOW_H

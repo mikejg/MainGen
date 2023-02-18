@@ -72,12 +72,16 @@ DialogStart::~DialogStart()
 
 void DialogStart::loadProjectName()
 {
+    qDebug() << Q_FUNC_INFO;
+
     QDir dir;
     QStringList filters;
     QStringList stringList_Prg;
     QStringList stringList_TMP;
     QString string_Projektname;
+    QStringList stringList_Projektnames;
 
+    bool bool_first = true;
     filters << "*.spf";
     dir.setNameFilters(filters);
 
@@ -86,12 +90,38 @@ void DialogStart::loadProjectName()
     dir.setPath(settings->value("ProgrammDir", "").toString());
     stringList_Prg = dir.entryList(QDir::Files);
 
+    /* Lösche alle Einträge in der StringList Projektnames */
+    stringList_Projektnames.clear();
+
+    /* Geh durch alle gefunden SPF-Dateien und such nach einen Projektnamen
+     * Wenn es die erste SPF-Datei ist schreibe den Projektnamen in die Liste
+     * ansonsten sieh in der Liste nach ob es den aktuellen Prjektnamen schon gibt
+     * Wenn nicht sende das Signal differentProjectFound*/
+    foreach (QString string_Prg, stringList_Prg)
+    {
+        qDebug() << string_Prg << ": " << string_Projektname;
+        string_Projektname = parser_Programm->parseProjectName(dir.path() + "/" + string_Prg);
+        if(bool_first)
+        {
+           stringList_Projektnames.append(string_Projektname);
+           bool_first = false;
+           continue;
+        }
+
+        if(!stringList_Projektnames.contains(string_Projektname))
+        {
+           emit sig_DifferentProjectFound();
+           this->close();
+           return;
+        }
+    }
+
     /* Wenn die stringList_Prg Einträge hat, also wenn CNC-Programme
      * vorhanden sind, lade mir aus dem ersten CNC-Programm den Projektnamen */
     if(!stringList_Prg.isEmpty())
     {
         qDebug() << "if(!stringList_Prg.isEmpty())";
-        string_Projektname = "nichts";
+        //string_Projektname = "nichts";
         /* Zieh den ProjektNamen und ProjektStand aus dem CNC-Programm */
         string_Projektname = parser_Programm->parseProjectName(dir.path() + "/" + stringList_Prg.first());
 

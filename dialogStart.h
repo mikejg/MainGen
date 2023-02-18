@@ -55,6 +55,7 @@ public:
 
 signals:
     void allValid();
+    void sig_DifferentProjectFound();
     void sig_Log(QString);
     void sig_Err(QString);
 

@@ -105,6 +105,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(dialogWrite, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
     connect(dialogStart, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
     connect(dialogStart, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
+    connect(dialogStart, SIGNAL(sig_DifferentProjectFound()), this, SLOT(slot_DifferentProjectFound()));
+    connect(dialogStart, SIGNAL(rejected()), this, SLOT(slot_DialogStartRejected()));
     connect(dialogRecover, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
     connect(dialogRecover, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
     connect(parser, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
@@ -135,6 +137,7 @@ MainWindow::MainWindow(QWidget *parent)
     //showTop100();
     showMagazin();
     license->checkLicense();
+    disableAll();
 }
 
 MainWindow::~MainWindow()
@@ -189,6 +192,11 @@ void MainWindow::erstelle_ToolList()
 
 void MainWindow::generate_MPF()
 {
+    ui->actionSpeichern->setDisabled(false);
+    action_Save->setDisabled(false);
+    ui->actionDrucken->setDisabled(false);
+    action_Print->setDisabled(false);
+
     string_ProgrammDir  = settings->value("ProgrammDir", "").toString();
     string_VorlageSp1   = settings->value("VorlageSp1", "").toString();
     string_VorlageSp2   = settings->value("VorlageSp2", "").toString();
@@ -929,6 +937,13 @@ void MainWindow::slot_SchwesterProjekt(bool b)
 void MainWindow::slot_OpenRPL(bool b)
 {
     qDebug() << Q_FUNC_INFO;
+
+    disableAll();
+    ui->actionSchwester_Projekt_hinzufuegen->setDisabled(false);
+    ui->actionDrucken->setDisabled(false);
+    action_Print->setDisabled(false);
+    ui->action_Import_Rpl->setDisabled(false);
+
     Q_UNUSED(b);
     QStringList stringList_Split;
 
@@ -938,10 +953,17 @@ void MainWindow::slot_OpenRPL(bool b)
     stringList_Split = fileInfo.baseName().split("_");
     if(stringList_Split.size() < 4)
     {
-        slot_Err("Falscher DateiName: Zeichnungsnummer_Zeichnungsstand_Spannung_Wiederholfertigung");
-        slot_Err("E14207809_E02_Sp2_0");
+        slot_Err("----------------------------------------------------------------");
+        slot_Err("|                      Falscher DateiName                      |");
+        slot_Err("----------------------------------------------------------------");
+        slot_Err("| Zeichnungsnummer_Zeichnungsstand_Spannung_Wiederholfertigung |");
+        slot_Err("| E14207809_E02_Sp2_0                                          |");
+        slot_Err("| Beheben Sie das Problem und starten Sie die Applikation neu  |");
+        slot_Err("----------------------------------------------------------------");
+        this->setDisabled(true);
         return;
     }
+
     string_Projekt = stringList_Split.at(0) + "_" +
                      stringList_Split.at(1) + "_" +
                      stringList_Split.at(2);
@@ -1066,3 +1088,32 @@ QString MainWindow::formatString(QString str)
     return str;
 }
 
+void MainWindow::slot_DifferentProjectFound()
+{
+    slot_Err("");
+    slot_Err("-------------------------------------------------------");
+    slot_Err("|   SPF-Dateien unterschiedlicher Projekte gefunden   |");
+    slot_Err("-------------------------------------------------------");
+    slot_Err("| - Lösche SPF-Dateien aus dem Programm Ordner        |");
+    slot_Err("| - Führen Sie erneut den Postprozessor aus           |");
+    slot_Err("| - Starten Sie diese Applikation neu                 |");
+    slot_Err("-------------------------------------------------------");
+    this->setDisabled(true);
+}
+
+void MainWindow::slot_DialogStartRejected()
+{
+  disableAll();
+  ui->actionOeffnen->setDisabled(false);
+}
+
+void MainWindow::disableAll()
+{
+    ui->actionSpeichern->setDisabled(true);
+    action_Save->setDisabled(true);
+    ui->actionDrucken->setDisabled(true);
+    action_Print->setDisabled(true);
+    ui->actionSchwester_Projekt_hinzufuegen->setDisabled(true);
+    ui->action_Import_Rpl->setDisabled(true);
+    ui->actionOeffnen->setDisabled(true);
+}
