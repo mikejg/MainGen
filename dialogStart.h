@@ -10,6 +10,7 @@
 #include <QSettings>
 #include <QDir>
 #include <QComboBox>
+#include <QDoubleSpinBox>
 
 namespace Ui {
 class DialogStart;
@@ -48,6 +49,8 @@ public:
     //QCheckBox* checkBox_WriteG55;
     QStringList stringList_Material;
     QComboBox* comboBox_Material;
+
+    QDoubleSpinBox* doubleSpinBox_ZRohTeil;
 
     void loadProjectName();
     void setSettings(QSettings* s) {settings = s;}

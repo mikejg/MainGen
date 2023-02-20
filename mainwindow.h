@@ -118,7 +118,7 @@ private:
 
     void erstelle_ToolList();
     void finish_Rohteil_Kontrolle();
-    void load_Programme();
+    bool load_Programme();
     bool openFile(QString fileName);
     void save_MPF(bool);
     void set_MainLayout();
@@ -130,6 +130,7 @@ private:
     void disableAll();
     //void textEdit_append(QString);
     QString formatString(QString);
+    void FileNameMax(QStringList);
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -157,6 +158,5 @@ public slots:
     void slot_RepetitionAccepted();
     void slot_DifferentProjectFound();
     void slot_DialogStartRejected();
-
 };
 #endif // MAINWINDOW_H

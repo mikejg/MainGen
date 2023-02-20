@@ -30,6 +30,8 @@ DialogStart::DialogStart(QWidget *parent) :
 
     QVBoxLayout* vboxlayout_Rohteil = new QVBoxLayout(this);
     vboxlayout_Rohteil->addWidget(ui->label_Rohteil);
+
+
     QHBoxLayout* hboxlayout_XYZ = new QHBoxLayout(this);
     hboxlayout_XYZ->addWidget(ui->label_X);
     hboxlayout_XYZ->addWidget(ui->lineEdit_X);
@@ -40,10 +42,16 @@ DialogStart::DialogStart(QWidget *parent) :
     vboxlayout_Rohteil->addLayout(hboxlayout_XYZ);
     centralLayout->addLayout(vboxlayout_Rohteil);
 
+    QHBoxLayout* hboxlayout_ZRohteil = new QHBoxLayout(this);
+    hboxlayout_ZRohteil->addWidget(ui->label_ZRohTeil);
+    hboxlayout_ZRohteil->addWidget(ui->doubleSpinBox_ZRohTeil);
+    centralLayout->addLayout(hboxlayout_ZRohteil);
+
     centralLayout->addWidget(ui->comboBox_Material);
     ui->comboBox_Material->addItem("*");
     readMaterial();
     ui->comboBox_Material->addItems(stringList_Material);
+
     centralLayout->addWidget(ui->buttonBox);
 
 
@@ -58,6 +66,8 @@ DialogStart::DialogStart(QWidget *parent) :
     radioButton_Sp2 = ui->radioButton_Spannung2;
 
     comboBox_Material =  ui->comboBox_Material;
+
+    doubleSpinBox_ZRohTeil = ui->doubleSpinBox_ZRohTeil;
 
     //checkBox_WriteG55 = ui->checkBox_WriteG55;
 
@@ -246,6 +256,8 @@ void DialogStart::slot_Sp1_Toggled(bool b)
        ui->label_X->setEnabled(b);
        ui->label_Y->setEnabled(b);
        ui->label_Z->setEnabled(b);
+       ui->doubleSpinBox_ZRohTeil->setEnabled(b);
+       ui->label_ZRohTeil->setEnabled(b);
 }
 
 void DialogStart::readMaterial()

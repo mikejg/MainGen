@@ -103,6 +103,7 @@ void DialogWrite::finish_Antasten()
         string_Line = in.readLine();
         string_Line = string_Line.replace("$RX$", dialogStart->lineEdit_RohteilX->text());
         string_Line = string_Line.replace("$RY$", dialogStart->lineEdit_RohteilY->text());
+        string_Line = string_Line.replace("$ZRT$", QString("%1").arg(dialogStart->doubleSpinBox_ZRohTeil->value()));
         stringList_Lines.append(string_Line);
     }
     file_fileToParse.close();

@@ -212,7 +212,8 @@ void MainWindow::generate_MPF()
         dialogStart->show();
         return;
     }
-    load_Programme();
+    if(!load_Programme())
+        return;
     int wf = dbManager->getWiederholFertigung(string_Projekt);
     string_WiederholFertigung = QString("%1").arg(wf);
 
@@ -237,7 +238,7 @@ void MainWindow::generate_MPF()
     showTable();
 }
 
-void MainWindow::load_Programme()
+bool MainWindow::load_Programme()
 {
 
     QDir dir;
@@ -245,6 +246,7 @@ void MainWindow::load_Programme()
     QString string_shortName;
     bool bool_OK;
     int int_I;  Q_UNUSED(int_I);
+
 
     filters << "*.spf";
     dir.setNameFilters(filters);
@@ -279,21 +281,37 @@ void MainWindow::load_Programme()
             str = "0" + str;
         }
 
-        /* Wenn der Dateiname länger als 28 Zeichen hat soll er gekürzt werden
-         * 24 Zeichen + ".spf" ergibt 28 Zeichen
-         * Schreiben die ersten 24 Zeichen des Strings str in string_shortName
-         * Benenne die Datei um
-         * Schreibe den kurzen Dateinamen in den String str*/
-
-        /*Fliegt erstmal raus
-        if(str.length() > 31)
+        if(!bool_Numbering && str.length() > 27)
         {
-            string_shortName = str.left(27) + ".spf";
-            dir.rename(str, string_shortName);
-            str = string_shortName;
+            if(str.startsWith("0"))
+            {
+                str = str.right(str.length()-1);
+                dir.rename("0"+ str, str);
+            }
+            QStringList stringList_Errors;
+            stringList_Errors.append("Datei: " + str + " zu lang");
+            stringList_Errors.append(" Kürzen Sie den Komponentenjob");
+            stringList_Errors.append(" Starten Sie die Applikation neu");
+            FileNameMax(stringList_Errors);
+            return false;
         }
-        */
 
+        if(bool_Numbering && str.length() > 21)
+        {
+            if(str.startsWith("0"))
+            {
+                str = str.right(str.length()-1);
+                dir.rename("0"+ str, str);
+            }
+            QStringList stringList_Errors;
+            stringList_Errors.append("Datei: " + str + " zu lang");
+            stringList_Errors.append(" - Loeschen Sie die Datei");
+            stringList_Errors.append(" - Kürzen Sie den Komponentenjob");
+            stringList_Errors.append(" - Spielen sie die Datei neu aus");
+            stringList_Errors.append(" - Starten Sie die Applikation neu");
+            FileNameMax(stringList_Errors);
+            return false;
+        }
         tmp.append(str);
 
     }
@@ -328,6 +346,8 @@ void MainWindow::load_Programme()
             stringList_Programme.append(str);
         }
     }
+
+    return true;
 }
 
 bool MainWindow::openFile(QString fileName)
@@ -575,7 +595,7 @@ void MainWindow::set_Spannung(QString string_Vorlage)
        string_Line = string_Line.replace("$RY$", dialogStart->lineEdit_RohteilY->text());
        string_Line = string_Line.replace("$RZ$", dialogStart->lineEdit_RohteilZ->text());
        string_Line = string_Line.replace("$Ma$", dialogStart->comboBox_Material->currentText());
-
+       //string_Line = string_Line.replace("$ZRT$", QString("%1").arg(dialogStart->doubleSpinBox_ZRohTeil->value()));
        if(string_Line.contains("$G55$"))
        {
 
@@ -995,7 +1015,8 @@ void MainWindow::slot_CheckFiles(bool b)
     dialogStart->hide();
     tabWidget->setCurrentWidget(widget_Log);
 
-    load_Programme();
+    if(!load_Programme())
+        return;
     foreach (QString string_Programm, stringList_Programme)
     {
         parser_Programm->finish(string_ProgrammDir+ "/" + string_Programm);
@@ -1116,4 +1137,32 @@ void MainWindow::disableAll()
     ui->actionSchwester_Projekt_hinzufuegen->setDisabled(true);
     ui->action_Import_Rpl->setDisabled(true);
     ui->actionOeffnen->setDisabled(true);
+}
+
+void MainWindow::FileNameMax(QStringList stringList_Errors)
+{
+    int maxLength = 0;
+    QString string_Balken;
+    foreach (QString str, stringList_Errors)
+    {
+        if(str.length() > maxLength)
+            maxLength = str.length();
+    }
+    string_Balken = "";
+    while(string_Balken.length() <= maxLength)
+    {
+        string_Balken = string_Balken + "-";
+    }
+    string_Balken = string_Balken +"---";
+
+    slot_Err(string_Balken);
+    foreach (QString str, stringList_Errors)
+    {
+        while(str.length() < maxLength)
+            str = str + " ";
+        slot_Err("| " + str + " |");
+    }
+    slot_Err(string_Balken);
+    this->setDisabled(true);
+
 }
