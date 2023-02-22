@@ -148,12 +148,16 @@ MainWindow::~MainWindow()
 
 void MainWindow::erstelle_Magazin()
 {
-    qDebug() << Q_FUNC_INFO << " start";
-    //QDir dir = QDir(string_AppDir + "/WZ_Magazin");
+    /* Erstelle QDir dir mit dem String string_MagazinDir
+     * setzen den Filter auf "*.INI"
+     * lade stringList_Files mit allen Files die mit *.INI enden */
     QDir dir = QDir(string_MagazinDir);
-    QFileInfoList fileInfoList = dir.entryInfoList();
-    QStringList stringList_Files;
+    QStringList filters;
+    filters << "*.INI";
+    dir.setNameFilters(filters);
+    QStringList stringList_Files = dir.entryList(QDir::Files);
 
+    /*
     foreach(QFileInfo fileInfo, fileInfoList)
     {
         if(fileInfo.fileName() != "." && fileInfo.fileName() != "..")
@@ -164,21 +168,27 @@ void MainWindow::erstelle_Magazin()
             }
         }
     }
+    */
 
+    /* Lösche toolList_Magazin
+     * Wenn es einen Eintrag in stringList_Files gibt
+     * übergib dem parser_Magazin das File und die leere toolList_Magazin
+     * sortiere die toolList_Magazin nach ID */
     toolList_Magazin->clear();
     if(!stringList_Files.isEmpty())
-        parser_Magazin->parse(stringList_Files.first(), toolList_Magazin);
+        parser_Magazin->parse(string_MagazinDir + "/" + stringList_Files.first(), toolList_Magazin);
 
     toolList_Magazin->sort_ID();
-    qDebug() << Q_FUNC_INFO << " end";
 }
 
 void MainWindow::erstelle_ToolList()
 {
+    // Lösche alle Werkzeuge in toolList_Project und toolList_AllProjects
     toolList_Project->clear();
     toolList_AllProjects->clear();
 
-    /* Suche in allen Programmen nach Werkzeugen */
+    /* Suche in allen Programmen nach Werkzeugen
+     * und trage die Werkzeuge in toolList_Project ein */
     foreach(QString string_Programm, stringList_Programme)
     {
        parser_Programm->parse(string_ProgrammDir+ "/" + string_Programm, toolList_Project);
@@ -186,6 +196,8 @@ void MainWindow::erstelle_ToolList()
 
     /* Sortiere die ToolList toolList_Project nach der WerkzeugID */
     toolList_Project->sort_ID();
+
+    /* Füge jedes Werkzeug von toolList_Project in die toolList_AllProject ein */
     foreach(Tool* tool, toolList_Project->getList())
         toolList_AllProjects->insert_Tool(tool);
 }
@@ -206,16 +218,18 @@ void MainWindow::generate_MPF()
     string_ProjektDir   = string_ProgrammDir + "/" + string_ProjektName + ".WPD";
     bool_Numbering      = settings->value("Nummerierung").toBool();
 
-    //qDebug() << "string_ProjektDir: " << string_ProjektDir;
+    /* Wenn das Feld Projektname leer ist wird abgebrochen und der dialogStart
+     * erneut angezeigt */
     if(string_ProjektName.isEmpty())
     {
         dialogStart->show();
         return;
     }
+
+    /* Wenn die Funktion load_Programme fehlschlug wird abgebrochen */
     if(!load_Programme())
         return;
-    int wf = dbManager->getWiederholFertigung(string_Projekt);
-    string_WiederholFertigung = QString("%1").arg(wf);
+
 
     if(dialogStart->radioButton_Sp1->isChecked())
     {
@@ -233,7 +247,10 @@ void MainWindow::generate_MPF()
         string_SpX      = "Sp2";
     }
 
-   // qDebug() << string_Projekt;
+
+    int wf = dbManager->getWiederholFertigung(string_Projekt);
+    string_WiederholFertigung = QString("%1").arg(wf);
+
     erstelle_ToolList();
     showTable();
 }
@@ -281,22 +298,7 @@ bool MainWindow::load_Programme()
             str = "0" + str;
         }
 
-        if(!bool_Numbering && str.length() > 27)
-        {
-            if(str.startsWith("0"))
-            {
-                str = str.right(str.length()-1);
-                dir.rename("0"+ str, str);
-            }
-            QStringList stringList_Errors;
-            stringList_Errors.append("Datei: " + str + " zu lang");
-            stringList_Errors.append(" Kürzen Sie den Komponentenjob");
-            stringList_Errors.append(" Starten Sie die Applikation neu");
-            FileNameMax(stringList_Errors);
-            return false;
-        }
-
-        if(bool_Numbering && str.length() > 21)
+        if(!bool_Numbering && str.length() > 31)
         {
             if(str.startsWith("0"))
             {
@@ -312,6 +314,26 @@ bool MainWindow::load_Programme()
             FileNameMax(stringList_Errors);
             return false;
         }
+
+        if(bool_Numbering && str.length() > 28)
+        {
+            qDebug() << str << ": " << str.length();
+            if(str.startsWith("0"))
+            {
+                str = str.right(str.length()-1);
+                dir.rename("0"+ str, str);
+            }
+            QStringList stringList_Errors;
+            stringList_Errors.append("Datei: " + str + " zu lang");
+            stringList_Errors.append(" - Loeschen Sie die Datei");
+            stringList_Errors.append(" - Kürzen Sie den Komponentenjob");
+            stringList_Errors.append(" - Spielen sie die Datei neu aus");
+            stringList_Errors.append(" - Starten Sie die Applikation neu");
+            FileNameMax(stringList_Errors);
+            return false;
+        }
+
+
         tmp.append(str);
 
     }
@@ -595,7 +617,7 @@ void MainWindow::set_Spannung(QString string_Vorlage)
        string_Line = string_Line.replace("$RY$", dialogStart->lineEdit_RohteilY->text());
        string_Line = string_Line.replace("$RZ$", dialogStart->lineEdit_RohteilZ->text());
        string_Line = string_Line.replace("$Ma$", dialogStart->comboBox_Material->currentText());
-       //string_Line = string_Line.replace("$ZRT$", QString("%1").arg(dialogStart->doubleSpinBox_ZRohTeil->value()));
+       string_Line = string_Line.replace("$ZRT$", QString("%1").arg(dialogStart->doubleSpinBox_ZRohTeil->value()));
        if(string_Line.contains("$G55$"))
        {
 
@@ -1143,6 +1165,7 @@ void MainWindow::FileNameMax(QStringList stringList_Errors)
 {
     int maxLength = 0;
     QString string_Balken;
+    bool bool_Balken = false;
     foreach (QString str, stringList_Errors)
     {
         if(str.length() > maxLength)
@@ -1158,9 +1181,16 @@ void MainWindow::FileNameMax(QStringList stringList_Errors)
     slot_Err(string_Balken);
     foreach (QString str, stringList_Errors)
     {
+        if(str == stringList_Errors.first())
+            bool_Balken = true;
         while(str.length() < maxLength)
             str = str + " ";
         slot_Err("| " + str + " |");
+        if(bool_Balken)
+        {
+            slot_Err(string_Balken);
+            bool_Balken = false;
+        }
     }
     slot_Err(string_Balken);
     this->setDisabled(true);

@@ -523,13 +523,16 @@ void DBManager::insertProject(QString string_RuestplanName, ToolList* toolList)
 
 int DBManager::getWiederholFertigung(QString string_Projekt)
 {
+    qDebug() << Q_FUNC_INFO;
     int int_Return;
     /*Öffnet die Hauptdatenbank*/
     if(!openMainDB())
         return -1;
 
-    //QSqlQuery query("select name from Ruestplan where name like '" + string_Projekt + "%';");
-    QSqlQuery query("select name from Ruestplan;");
+    QSqlQuery query("select name from Ruestplan where name like '" + string_Projekt + "%';");
+    qDebug() << query.lastQuery();
+
+    //QSqlQuery query("select name from Ruestplan;");
 
     int_Return = 0;
     while(query.next())

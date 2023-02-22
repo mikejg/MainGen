@@ -109,7 +109,6 @@ void DialogStart::loadProjectName()
      * Wenn nicht sende das Signal differentProjectFound*/
     foreach (QString string_Prg, stringList_Prg)
     {
-        qDebug() << string_Prg << ": " << string_Projektname;
         string_Projektname = parser_Programm->parseProjectName(dir.path() + "/" + string_Prg);
         if(bool_first)
         {
@@ -130,7 +129,6 @@ void DialogStart::loadProjectName()
      * vorhanden sind, lade mir aus dem ersten CNC-Programm den Projektnamen */
     if(!stringList_Prg.isEmpty())
     {
-        qDebug() << "if(!stringList_Prg.isEmpty())";
         //string_Projektname = "nichts";
         /* Zieh den ProjektNamen und ProjektStand aus dem CNC-Programm */
         string_Projektname = parser_Programm->parseProjectName(dir.path() + "/" + stringList_Prg.first());
