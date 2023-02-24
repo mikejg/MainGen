@@ -194,7 +194,7 @@ void MainWindow::erstelle_ToolList()
        parser_Programm->parse(string_ProgrammDir+ "/" + string_Programm, toolList_Project);
     }
 
-    /* Sortiere die ToolList toolList_Project nach der WerkzeugID */
+    /* Sortiere toolList_Project nach der WerkzeugID */
     toolList_Project->sort_ID();
 
     /* Füge jedes Werkzeug von toolList_Project in die toolList_AllProject ein */
@@ -204,11 +204,13 @@ void MainWindow::erstelle_ToolList()
 
 void MainWindow::generate_MPF()
 {
+    /* Activiere Menüpunkte und Icons fürs Speichern und Drucken */
     ui->actionSpeichern->setDisabled(false);
     action_Save->setDisabled(false);
     ui->actionDrucken->setDisabled(false);
     action_Print->setDisabled(false);
 
+    /* Schreibe Werte aus den Settings oder dialogStart in Variable */
     string_ProgrammDir  = settings->value("ProgrammDir", "").toString();
     string_VorlageSp1   = settings->value("VorlageSp1", "").toString();
     string_VorlageSp2   = settings->value("VorlageSp2", "").toString();
@@ -231,6 +233,8 @@ void MainWindow::generate_MPF()
         return;
 
 
+    /* Je nach Spannung wird das Hauptprogramm aus verschiedenen Vorlagen
+     * erstellt */
     if(dialogStart->radioButton_Sp1->isChecked())
     {
         set_Spannung(string_VorlageSp1);
@@ -247,7 +251,8 @@ void MainWindow::generate_MPF()
         string_SpX      = "Sp2";
     }
 
-
+    /* Überprüfe ob es das Projekt in der Datenbank schon gibt.
+     * Der Rückgabewert ist der neue Zählerstand für die Widerholfertigung */
     int wf = dbManager->getWiederholFertigung(string_Projekt);
     string_WiederholFertigung = QString("%1").arg(wf);
 
@@ -257,20 +262,25 @@ void MainWindow::generate_MPF()
 
 bool MainWindow::load_Programme()
 {
-
+    /* Erzeuge dir und setze den Pfad auf string_ProgrammDir
+     * setz den Filter auf SPF-Dateien */
     QDir dir;
     QStringList filters;
+    dir.setPath(string_ProgrammDir);
+    filters << "*.spf";
+    dir.setNameFilters(filters);
+
+    /* Variable die ich später noch brauche */
     QString string_shortName;
     bool bool_OK;
     int int_I;  Q_UNUSED(int_I);
 
-
-    filters << "*.spf";
-    dir.setNameFilters(filters);
-
+    /* Lösche alle Programme aus stringList_Programme */
     stringList_Programme.clear();
 
-    dir.setPath(string_ProgrammDir);
+    /* Wenn das Verzeichnis für die Programme nicht existiert wird ein
+     * Dialog zum auswählen eines Verzeichnises geöffnet und in die
+     * Settings geschrieben */
     if(!dir.exists())
     {
         string_ProgrammDir = fileDialog->getExistingDirectory(this,tr("Verzeichnis Programme"), "");
@@ -286,6 +296,8 @@ bool MainWindow::load_Programme()
     /*Erzeuge eine temporäre StringList tmp
      * geh durch stringList_Programme
      * wenn der Eintrag mit 1_ - 9_ stratet setze eine 0 davor
+     * Überprüfe die länge des Progammnamens abhängig ob
+     *  eine Nummerierung vorgesehen ist oder nicht
      * schreibe den Eintrag in tmp*/
     QStringList tmp;
     foreach(QString str, stringList_Programme)
@@ -333,9 +345,7 @@ bool MainWindow::load_Programme()
             return false;
         }
 
-
         tmp.append(str);
-
     }
 
     /* Sortiere tmp
@@ -347,24 +357,38 @@ bool MainWindow::load_Programme()
 
     foreach(QString str, tmp)
     {
+        /* Wenn keine Nummerierung der Programme vorgesehen ist */
         if(!bool_Numbering)
         {
+            /* Kopiere str nach string_shortName */
             string_shortName = str;
+
+            /* Überprüfe ob das erste Zeichen von string_shortName eine
+             * Zahl ist. Das Ergebniss wird in bool_OK gespeichert */
             int_I = string_shortName.left(1).toInt(&bool_OK, 10);
+
             while(bool_OK)
             {
+                /* Lösche das erste Zeichen von string_shortName */
                 string_shortName = string_shortName.right(string_shortName.length()-1);
+
+                /* Überprüfe ob das erste Zeichen von string_shortName eine Zahl ist */
                 int_I = string_shortName.left(1).toInt(&bool_OK, 10);
+
+                /* Wenn das erste Zeichen ein '_' ist wird bool_OK auf true gesetzt */
                 if(string_shortName.startsWith("_"))
-                bool_OK = true;
+                    bool_OK = true;
             }
 
-
+            /* Benenne das SPF-File um */
             dir.rename(str, string_shortName);
+
+            /* trage string_shortName in stringList_Progamme ein */
             stringList_Programme.append(string_shortName);
         }
         else
         {
+            /* trage str in d stringList_Programme ein */
             stringList_Programme.append(str);
         }
     }
@@ -374,6 +398,8 @@ bool MainWindow::load_Programme()
 
 bool MainWindow::openFile(QString fileName)
 {
+    /* Versuche das File zu öffnen und gib bei Erfolg true zurück
+     * wenn es fehlschlägt false */
     file->setFileName(fileName);
     if(file->open(QFile::ReadOnly))
         return true;
@@ -392,6 +418,7 @@ void MainWindow::slot_Save(bool b)
         return;
     }
 
+    /* zeige den Auswahldialog Wiederholfertigung */
     dialogRepetition->show();
     return;
 
@@ -399,7 +426,8 @@ void MainWindow::slot_Save(bool b)
 
 void MainWindow::slot_RepetitionAccepted()
 {
-       qDebug() << Q_FUNC_INFO;
+    /* Abhängig vom radioButton_Repetition wird die Funktion
+     * 'save_MPF' mit true oder false aufgerufen */
        if(dialogRepetition->radioButton_Repetition->isChecked())
        {
            save_MPF(true);
