@@ -88,10 +88,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(action_Print,      SIGNAL(triggered(bool)), this, SLOT(slot_Print(bool)));
     connect(ui->actionSchwester_Projekt_hinzufuegen, SIGNAL(triggered(bool)), this, SLOT(slot_SchwesterProjekt(bool)));
     connect(ui->actionOeffnen, SIGNAL(triggered(bool)), this, SLOT(slot_OpenRPL(bool)));
+    connect(action_Open,       SIGNAL(triggered(bool)), this, SLOT(slot_OpenRPL(bool)));
     connect(ui->actionRecoverDB, SIGNAL(triggered(bool)), this, SLOT(slot_RecoverDB(bool)));
     connect(ui->actionFinish_File, SIGNAL(triggered(bool)), this, SLOT(slot_CheckFiles(bool)));
     connect(action_FinishFile, SIGNAL(triggered(bool)), this,SLOT(slot_CheckFiles(bool)));
     connect(ui->action_Import_Rpl, SIGNAL(triggered(bool)), this, SLOT(slot_Import_Ruestplan(bool)));
+    connect(action_ImportRpl,      SIGNAL(triggered(bool)), this, SLOT(slot_Import_Ruestplan(bool)));
 
     connect(dialogSettings, SIGNAL(settingsOK()), dialogStart, SLOT(showDialog()));
     connect(dialogSettings, SIGNAL(settingsOK()), this, SLOT(slot_CopyWerkzeugDB()));
@@ -103,6 +105,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(dbManager, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
     connect(dialogWrite, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
     connect(dialogWrite, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
+    connect(dialogWrite, SIGNAL(sig_Finished()), this, SLOT(slot_DialogWriteFinished()));
     connect(dialogStart, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
     connect(dialogStart, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
     connect(dialogStart, SIGNAL(sig_DifferentProjectFound()), this, SLOT(slot_DifferentProjectFound()));
@@ -538,14 +541,16 @@ void MainWindow::save_MPF(bool bool_Repetition)
 void MainWindow::set_MainLayout()
 {
     QToolBar *toolbar = this->addToolBar("main toolbar");
-    action_Open = toolbar->addAction(QIcon(":/Icons/Open.svg"),
+    action_Open = toolbar->addAction(QIcon(":/Icons/File_Open.png"),
           "Rüstplan Öffnen");
-    action_Save = toolbar->addAction(QIcon(":/Icons/Save.svg"),
+    action_Save = toolbar->addAction(QIcon(":/Icons/File_Save.png"),
           "Rüstplan Speichern");
-    action_Print = toolbar->addAction(QIcon(":/Icons/Print.svg"),
+    action_Print = toolbar->addAction(QIcon(":/Icons/Print.png"),
           "Rüstplan Drucken");
-    action_FinishFile = toolbar->addAction(QIcon(":/Icons/checklist.svg"),
+    action_FinishFile = toolbar->addAction(QIcon(":/Icons/Inspection.png"),
           "Finish einzelne Files");
+    action_ImportRpl = toolbar->addAction(QIcon(":/Icons/Store_in_Database.png"),
+                                          "Speicher Rüstplan in Datenbank");
     QVBoxLayout *vLayoutMain;
 
     QWidget *Widget1;
@@ -909,6 +914,8 @@ void MainWindow::slot_Import_Ruestplan(bool b)
         i++;
     }
 
+    slot_DialogWriteFinished();
+
     slot_Log("");
     slot_Log(string_Balken);
     slot_Log(string_Meldung);
@@ -1013,6 +1020,7 @@ void MainWindow::slot_OpenRPL(bool b)
     ui->actionDrucken->setDisabled(false);
     action_Print->setDisabled(false);
     ui->action_Import_Rpl->setDisabled(false);
+    action_ImportRpl->setDisabled(false);
 
     Q_UNUSED(b);
     QStringList stringList_Split;
@@ -1037,6 +1045,10 @@ void MainWindow::slot_OpenRPL(bool b)
     string_Projekt = stringList_Split.at(0) + "_" +
                      stringList_Split.at(1) + "_" +
                      stringList_Split.at(2);
+
+    string_ProjektName = stringList_Split.at(0);
+    string_ProjektStand = stringList_Split.at(1);
+    string_SpX = stringList_Split.at(2);
 
     int wf = dbManager->getWiederholFertigung(string_Projekt);
     string_WiederholFertigung = QString("%1").arg(wf);
@@ -1182,10 +1194,14 @@ void MainWindow::disableAll()
 {
     ui->actionSpeichern->setDisabled(true);
     action_Save->setDisabled(true);
+
     ui->actionDrucken->setDisabled(true);
     action_Print->setDisabled(true);
+
     ui->actionSchwester_Projekt_hinzufuegen->setDisabled(true);
     ui->action_Import_Rpl->setDisabled(true);
+    action_ImportRpl->setDisabled(true);
+
     ui->actionOeffnen->setDisabled(true);
 }
 
@@ -1223,4 +1239,116 @@ void MainWindow::FileNameMax(QStringList stringList_Errors)
     slot_Err(string_Balken);
     this->setDisabled(true);
 
+}
+
+void MainWindow::slot_DialogWriteFinished()
+{
+    QString dst = string_ProgrammDir + "/" + string_ProjektName + ".WPD/" +
+            string_ProjektName+ "_" + string_ProjektStand + "_" + string_SpX  + ".WPD/" +
+            string_SpX + "_WKZ_beladen.WPD";
+    QString src = QDir::homePath() + "/MainGen/Vorlage.WPD/WKZ_beladen.WPD";
+
+    QStringList stringList_Kopf;
+    QStringList stringList_Rumpf;
+    QStringList stringList_End;
+
+    QDir dir_Vorlagen(src);
+    QDir dir(dst);
+    dir.mkdir(dst);
+
+    /*Kopiert den Ordner Vorlagen.WPD/WKZ_beladen.WPD nach
+     * Programme/E123456789.WPD/E123456789_E0_Sp1.WPD/Sp1_WKZ_beladen.WPD*/
+    dir_Vorlagen.mkpath(dst);
+    foreach (QString f, dir_Vorlagen.entryList(QDir::Files))
+    {
+        QFile::copy(src + QDir::separator() + f, dst + QDir::separator() + f);
+    }
+
+    /* Läd den Inhalt der Datei WKZ_beladen_Kopf in stringList_Kopf */
+    if(!openFile(QDir::homePath() + "/MainGen/Vorlagen/WKZ_beladen_Kopf.spf"))
+    {
+        slot_Err(Q_FUNC_INFO + QString(" - ") + QDir::homePath() + "/MainGen/Vorlagen/WKZ_beladen_Kopf" +
+                 QString(" konnte nicht geöffnet werden"));
+        return;
+    }
+    QTextStream textStream_InKopf(file);
+    while (!textStream_InKopf.atEnd())
+    {
+        stringList_Kopf.append(textStream_InKopf.readLine());
+    }
+    file->close();
+
+    /* Läd den Inhalt der Datei WKZ_beladen_Rumpf in stringList_Rumpf */
+    if(!openFile(QDir::homePath() + "/MainGen/Vorlagen/WKZ_beladen_Rumpf.spf"))
+    {
+        slot_Err(Q_FUNC_INFO + QString(" - ") + QDir::homePath() + "/MainGen/Vorlagen/WKZ_beladen_Rumpf" +
+                 QString(" konnte nicht geöffnet werden"));
+        return;
+    }
+    QTextStream textStream_InRumpf(file);
+    while (!textStream_InRumpf.atEnd())
+    {
+        stringList_Rumpf.append(textStream_InRumpf.readLine());
+    }
+    file->close();
+
+    /* Läd den Inhalt der Datei WKZ_beladen_End in stringList_End */
+    if(!openFile(QDir::homePath() + "/MainGen/Vorlagen/WKZ_beladen_End.spf"))
+    {
+        slot_Err(Q_FUNC_INFO + QString(" - ") + QDir::homePath() + "/MainGen/Vorlagen/WKZ_beladen_End" +
+                 QString(" konnte nicht geöffnet werden"));
+        return;
+    }
+    QTextStream textStream_InEnd(file);
+    while (!textStream_InEnd.atEnd())
+    {
+        stringList_End.append(textStream_InEnd.readLine());
+    }
+    file->close();
+
+
+    QFile file_Write(dst + "/_" + string_SpX + "_WKZ_beladen.spf");
+    if(file_Write.open(QFile::WriteOnly))
+    {
+        int count = 1;
+        QTextStream stream(&file_Write);
+        foreach(QString string_Line, stringList_Kopf)
+        {
+          stream << QString("N%1 ").arg(count) << string_Line << "\n";
+          count++;
+          if(string_Line.contains("Werkzeugliste Anfang"))
+          {
+              foreach(Tool* tool, toolList_IN->getList())
+              {
+                stream << QString("N%1 ").arg(count) <<
+                          "; T " << tool->get_Number() <<
+                          "  " << tool->get_Description() <<
+                          "\n";
+                count++;
+              }
+          }
+        }
+
+        foreach (Tool* tool, toolList_IN->getList())
+        {
+            foreach (QString string_Rumpf, stringList_Rumpf)
+            {
+                if(string_Rumpf.contains("$TNumber$"))
+                {
+                    string_Rumpf.replace("$TNumber$", tool->get_Number());
+                    string_Rumpf = string_Rumpf + " ; " + tool->get_Description();
+                }
+                stream << QString("N%1 ").arg(count) << string_Rumpf << "\n";
+                count++;
+            }
+        }
+
+        foreach(QString string_Line, stringList_End)
+        {
+          stream << QString("N%1 ").arg(count) << string_Line << "\n";
+          count++;
+        }
+
+        file_Write.close();
+    }
 }

@@ -78,6 +78,7 @@ void DialogWrite::slot_nextProgramm()
             finish_Reinigen();
         }
         this->hide();
+        emit sig_Finished();
     }
 }
 

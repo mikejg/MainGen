@@ -66,6 +66,7 @@ private:
     QAction *action_Save;
     QAction *action_Print;
     QAction *action_FinishFile;
+    QAction *action_ImportRpl;
 
     QString string_ProgrammDir;
     QString string_Projekt;
@@ -158,5 +159,6 @@ public slots:
     void slot_RepetitionAccepted();
     void slot_DifferentProjectFound();
     void slot_DialogStartRejected();
+    void slot_DialogWriteFinished();
 };
 #endif // MAINWINDOW_H

@@ -57,6 +57,7 @@ public slots:
 signals:
     void sig_Log(QString);
     void sig_Err(QString);
+    void sig_Finished();
 };
 
 #endif // DIALOGWRITE_H
