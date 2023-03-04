@@ -33,6 +33,12 @@ DialogSettings::DialogSettings(QWidget *parent) :
     spannung2Layout->addWidget(ui->toolButton_Spannung2);
     centralLayout->addLayout(spannung2Layout);
 
+    centralLayout->addWidget(ui->label_Spannung3);
+    QHBoxLayout* spannung3Layout = new QHBoxLayout(this);
+    spannung3Layout->addWidget(ui->lineEdit_Spannung3);
+    spannung3Layout->addWidget(ui->toolButton_Spannung3);
+    centralLayout->addLayout(spannung3Layout);
+
     centralLayout->addWidget(ui->label_Magazin);
     QHBoxLayout* magazinLayout = new QHBoxLayout(this);
     magazinLayout->addWidget(ui->lineEdit_Magazin);
@@ -56,6 +62,7 @@ DialogSettings::DialogSettings(QWidget *parent) :
     connect(ui->toolButton_Programme, SIGNAL(clicked(bool)), this, SLOT(toolButton_Programme_clicked(bool)));
     connect(ui->toolButton_Spannung1, SIGNAL(clicked(bool)), this, SLOT(toolButton_VorlageSp1_clicked(bool)));
     connect(ui->toolButton_Spannung2, SIGNAL(clicked(bool)), this, SLOT(toolButton_VorlageSp2_clicked(bool)));
+    connect(ui->toolButton_Spannung3, SIGNAL(clicked(bool)), this, SLOT(toolButton_VorlageSp3_clicked(bool)));
     connect(ui->toolButton_Magazin, SIGNAL(clicked(bool)), this, SLOT(toolButton_Magazin_clicked(bool)));
     connect(ui->toolButton_WerkzeugDB, SIGNAL(clicked(bool)), this, SLOT(toolButton_WerkzeugDB_clicked(bool)));
 }
@@ -107,6 +114,15 @@ bool DialogSettings::checkSettings()
     else
         ui->lineEdit_Spannung2->setPalette(*paletteValid);
 
+    file.setFileName(ui->lineEdit_Spannung3->text());
+    if (!file.exists())
+    {
+        ui->lineEdit_Spannung3->setPalette(*paletteInValid);
+        bool_Return = false;
+    }
+    else
+        ui->lineEdit_Spannung3->setPalette(*paletteValid);
+
     file.setFileName(ui->lineEdit_WerkzeugDB->text());
     if (!file.exists())
     {
@@ -131,6 +147,7 @@ void DialogSettings::writeSettings()
  settings->setValue("ProgrammDir",ui->lineEdit_Programme->text());
  settings->setValue("VorlageSp1",ui->lineEdit_Spannung1->text());
  settings->setValue("VorlageSp2",ui->lineEdit_Spannung2->text());
+ settings->setValue("VorlageSp3",ui->lineEdit_Spannung3->text());
  settings->setValue("MagazinDir",ui->lineEdit_Magazin->text());
  settings->setValue("WerkzeugDB", ui->lineEdit_WerkzeugDB->text());
  settings->setValue("Nummerierung", QVariant(bool_Numbering).toString());
@@ -162,6 +179,14 @@ void DialogSettings::toolButton_VorlageSp2_clicked(bool b)
     ui->lineEdit_Spannung2->setText( fileDialog->getOpenFileName(this,"Vorlage Spannung2",QDir::homePath(),tr("Main Programm File(*.MPF)")));
 }
 
+void DialogSettings::toolButton_VorlageSp3_clicked(bool b)
+{
+    Q_UNUSED(b);
+    //qDebug() << "toolButton_Spannung2_clicked";
+    ui->lineEdit_Spannung3->setPalette(*paletteValid);
+    ui->lineEdit_Spannung3->setText( fileDialog->getOpenFileName(this,"Vorlage Spannung2",QDir::homePath(),tr("Main Programm File(*.MPF)")));
+}
+
 void DialogSettings::toolButton_Magazin_clicked(bool b)
 {
     Q_UNUSED(b);
@@ -186,6 +211,9 @@ void DialogSettings::set_VorlageSp1(QString s)
 
 void DialogSettings::set_VorlageSp2(QString s)
 {ui->lineEdit_Spannung2->setText(s);}
+
+void DialogSettings::set_VorlageSp3(QString s)
+{ui->lineEdit_Spannung3->setText(s);}
 
 void DialogSettings::set_Magazin(QString s)
 {ui->lineEdit_Magazin->setText(s);}

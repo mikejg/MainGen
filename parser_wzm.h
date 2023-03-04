@@ -20,10 +20,12 @@ private:
     bool openFile();
     void readFile();
     void splitLine(ToolList*);
+    void checkParted(ToolList*);
 
 public:
     explicit Parser_WZM(QObject *parent = nullptr);
     void     parse(QString, ToolList*);
+    void     checkPartedTools(QString, ToolList*);
     void    setDBManager(DBManager* dbm) {dbManager = dbm;}
 signals:
     void sig_Log(QString);

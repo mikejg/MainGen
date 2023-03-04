@@ -42,16 +42,18 @@ MainWindow::MainWindow(QWidget *parent)
     string_ProgrammDir = settings->value("ProgrammDir", "").toString();
     string_VorlageSp1 = settings->value("VorlageSp1", "").toString();
     string_VorlageSp2 = settings->value("VorlageSp2", "").toString();
+    string_VorlageSp3 = settings->value("VorlageSp3", "").toString();
     string_MagazinDir = settings->value("MagazinDir", "").toString();
     string_WerkzeugDB_orginal = settings->value("WerkzeugDB", "").toString();
     bool_Numbering = settings->value("Nummerierung").toBool();
-    qDebug() << "Numbering: " << bool_Numbering;
+    qDebug() << "Vorlage3: " << string_VorlageSp3;
 
     dialogSettings = new DialogSettings(this);
     dialogSettings->set_Settings(settings);
     dialogSettings->set_ProgrammDir(string_ProgrammDir);
     dialogSettings->set_VorlageSp1(string_VorlageSp1);
     dialogSettings->set_VorlageSp2(string_VorlageSp2);
+    dialogSettings->set_VorlageSp3(string_VorlageSp3);
     dialogSettings->set_Magazin(string_MagazinDir);
     dialogSettings->set_WerkzeugDB(string_WerkzeugDB_orginal);
     dialogSettings->set_Numbering(bool_Numbering);
@@ -179,8 +181,10 @@ void MainWindow::erstelle_Magazin()
      * sortiere die toolList_Magazin nach ID */
     toolList_Magazin->clear();
     if(!stringList_Files.isEmpty())
+    {
+        string_Magazin = stringList_Files.first();
         parser_Magazin->parse(string_MagazinDir + "/" + stringList_Files.first(), toolList_Magazin);
-
+    }
     toolList_Magazin->sort_ID();
 }
 
@@ -217,6 +221,7 @@ void MainWindow::generate_MPF()
     string_ProgrammDir  = settings->value("ProgrammDir", "").toString();
     string_VorlageSp1   = settings->value("VorlageSp1", "").toString();
     string_VorlageSp2   = settings->value("VorlageSp2", "").toString();
+    string_VorlageSp3   = settings->value("VorlageSp3", "").toString();
     string_ProjektName  = dialogStart->lineEdit_Projekt->text();
     string_Projekt      = string_ProjektName;
     string_ProjektStand = dialogStart->lineEdit_ProjektStand->text();
@@ -254,6 +259,13 @@ void MainWindow::generate_MPF()
         string_SpX      = "Sp2";
     }
 
+    if(dialogStart->radioButton_Sp3->isChecked())
+    {
+        set_Spannung(string_VorlageSp3);
+        string_Projekt = string_ProjektName + "_" + string_ProjektStand + "_Sp3";
+        string_Spannung = "Spannung3";
+        string_SpX      = "Sp3";
+    }
     /* Überprüfe ob es das Projekt in der Datenbank schon gibt.
      * Der Rückgabewert ist der neue Zählerstand für die Widerholfertigung */
     int wf = dbManager->getWiederholFertigung(string_Projekt);
@@ -733,6 +745,7 @@ void MainWindow::showTable()
         if(!toolList_Magazin->contains(tool))
             toolList_IN->insert_Tool(tool);
     }
+    parser_Magazin->checkPartedTools(string_MagazinDir + "/" + string_Magazin, toolList_IN);
     in_Size = toolList_IN->getSize();
 
     //Vergleiche Werkzeugmagazin mit Top100 und Projekt

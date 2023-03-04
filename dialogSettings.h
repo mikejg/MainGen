@@ -32,6 +32,7 @@ public:
     void set_ProgrammDir(QString s);
     void set_VorlageSp1(QString s);
     void set_VorlageSp2(QString s);
+    void set_VorlageSp3(QString s);
     void set_Magazin(QString s);
     void set_WerkzeugDB(QString s);
     void set_Numbering(bool b);
@@ -46,6 +47,7 @@ public slots:
     void toolButton_Programme_clicked(bool);
     void toolButton_VorlageSp1_clicked(bool);
     void toolButton_VorlageSp2_clicked(bool);
+    void toolButton_VorlageSp3_clicked(bool);
     void toolButton_Magazin_clicked(bool);
     void toolButton_WerkzeugDB_clicked(bool);
 };

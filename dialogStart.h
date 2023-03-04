@@ -45,7 +45,8 @@ public:
 
     QRadioButton* radioButton_Sp1;
     QRadioButton* radioButton_Sp2;
-
+    QRadioButton* radioButton_Sp3
+    ;
     //QCheckBox* checkBox_WriteG55;
     QStringList stringList_Material;
     QComboBox* comboBox_Material;

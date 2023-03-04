@@ -75,7 +75,9 @@ private:
     QString string_ProjektDir;
     QString string_VorlageSp1;
     QString string_VorlageSp2;
+    QString string_VorlageSp3;
     QString string_MagazinDir;
+    QString string_Magazin;
     QString string_WerkzeugDB_orginal;
     QString string_Spannung;
     QString string_SpX;

@@ -64,6 +64,7 @@ DialogStart::DialogStart(QWidget *parent) :
 
     radioButton_Sp1 = ui->radioButton_Spannung1;
     radioButton_Sp2 = ui->radioButton_Spannung2;
+    radioButton_Sp3 = ui->radioButton_Spannung3;
 
     comboBox_Material =  ui->comboBox_Material;
 
@@ -152,8 +153,12 @@ void DialogStart::loadProjectName()
                 if(string_SPx == "SP2" ||
                    string_SPx == "Sp2" ||
                    string_SPx == "sp2")
+                   ui->radioButton_Spannung2->setChecked(true);
 
-                    ui->radioButton_Spannung2->setChecked(true);
+                if(string_SPx == "SP3" ||
+                   string_SPx == "Sp3" ||
+                   string_SPx == "sp")
+                   ui->radioButton_Spannung3->setChecked(true);
             }
         }
 
