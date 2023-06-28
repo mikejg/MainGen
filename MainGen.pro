@@ -1,5 +1,4 @@
-QT       += core printsupport gui sql network
-#core5compat
+QT       += core printsupport gui sql network core5compat
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -22,6 +21,7 @@ SOURCES += \
     project.cpp \
     settings.cpp \
     tablemodel.cpp \
+    tableprinter.cpp \
     tool.cpp \
     toollist.cpp \
     license.cpp
@@ -38,6 +38,7 @@ HEADERS += \
     project.h \
     settings.h \
     tablemodel.h \
+    tableprinter.h \
     tool.h \
     toollist.h \
     license.h

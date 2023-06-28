@@ -50,6 +50,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
             if(col == 2) return list_TAL[row];
             if(col == 3) return list_TFL[row];
             if(col == 4) return list_Description[row];
+
         case Qt::FontRole:
             if(row == 0 ||
                list_Description[row].contains("EINLAGERN") ||

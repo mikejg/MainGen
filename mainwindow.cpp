@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
 #include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -68,6 +69,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mfile, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
     connect(mfile, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
 
+    //connection Menu
+    connect(ui->action_Print, SIGNAL(triggered(bool)), this, SLOT(slot_Print(bool)));
     QTimer::singleShot(500,this,SLOT(slot_startApplication()));
 }
 
@@ -125,6 +128,7 @@ void MainWindow::showTable_Rustplan()
     foreach(Tool* tool, project->get_ToolList()->getList())
         toolList_Table->insert_Tool(tool);
     toolList_Table->sort_ID();
+
     int_Projects_Size = project->get_ToolList()->getSize();
 
     foreach(Tool* tool, toolList_Table->getList())
@@ -303,6 +307,34 @@ void MainWindow::slot_LicenseFaild()
     //dialogStart->close();
     slot_Err("Keine gültige Lizenz");
         QTimer::singleShot(5000, this, SLOT(close()));
+}
+
+void MainWindow::slot_Print(bool b)
+{   Q_UNUSED(b);
+
+        QPrintPreviewDialog dialog;
+        connect(&dialog, SIGNAL(paintRequested(QPrinter*)), this, SLOT(slot_PrintPage(QPrinter*)));
+        dialog.exec();
+}
+
+void MainWindow::slot_PrintPage(QPrinter *printer)
+{
+
+        // ------------------ simplest example --------------------------
+
+        QPainter painter;
+        if(!painter.begin(printer)) {
+        qWarning() << "can't start printer";
+        return;
+        }
+        // print table
+        TablePrinter tablePrinter(&painter, printer);
+        QVector<int> columnStretch = QVector<int>() << 5 << 3 << 2 << 2 << 20;
+        QVector<QString> columnHeaders = QVector<QString>() << "Tool ID" << "GL" << "AL" << "FL" << "Beschreibung";
+        if(!tablePrinter.printTable(ui->tableView_Rustplan->model(), columnStretch, columnHeaders)) {
+        slot_Err(Q_FUNC_INFO + QString(" - ") + tablePrinter.lastError());
+        }
+        painter.end();
 }
 
 void MainWindow::slot_startApplication()

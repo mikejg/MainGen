@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QPainter>
+#include <QPrinter>
+#include <QPrintPreviewDialog>
 #include <QTableView>
 
 #include "dbManager.h"
@@ -13,6 +16,7 @@
 #include "parser_placeholder.h"
 #include "project.h"
 #include "tablemodel.h"
+#include "tableprinter.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -66,6 +70,8 @@ public slots:
     void slot_Err(QString);
     void slot_LicenseFaild();
     void slot_Log(QString);
+    void slot_Print(bool);
+    void slot_PrintPage(QPrinter*);
     void slot_startApplication();
 
 };
