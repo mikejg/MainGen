@@ -1,4 +1,5 @@
-QT       += core printsupport gui sql network core5compat
+QT       += core printsupport gui sql network
+#core5compat
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
