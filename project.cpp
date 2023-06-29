@@ -149,6 +149,10 @@ bool Project::loadProjectData()
                 string_ProjectClamping = stringList_TMP.at(2);
                 //emit sig_Log("ProjectClamping: " + string_ProjectClamping);
             }
+
+            string_ProjectFullName = string_ProjectName + "_" +
+                                     string_ProjectStatus + "_" +
+                                     string_ProjectClamping;
         }
     }
 
@@ -206,6 +210,13 @@ bool Project::loadProjectToolList()
         }
         toolList->sort_ID();
         return true;
+}
+
+void Project::set_ProjectFullName()
+{
+        string_ProjectFullName = string_ProjectName + "_" +
+                                 string_ProjectStatus + "_" +
+                                 string_ProjectClamping;
 }
 
 void Project::set_Settings(Settings* s)

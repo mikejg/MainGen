@@ -297,6 +297,8 @@ void DialogStart::slot_CheckInput()
         break;
     }
 
+    project->set_ProjectFullName();
+
     /* Wenn das maximale Aufmass vom Rohteil definert wurde rechne das Aufmass auf das Bauteil um
        Ansonsten übernimm die Werte aus den SpinBoxen*/
     if(ui->groupBox_AufmassMaxRT->title().contains("Rohteil"))

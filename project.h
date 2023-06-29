@@ -13,6 +13,7 @@ private:
     Settings* settings;
 
     QString string_ProgrammDir;
+    QString string_ProjectFullName;
     QString string_ProjectName;
     QString string_ProjectStatus;
     QString string_ProjectClamping;
@@ -67,6 +68,7 @@ public:
     QString get_Material()         {return string_Material;}
     QStringList get_Programms()    {return stringList_Prg;}
     QString get_ProjectClamping()  {return string_ProjectClamping;}
+    QString get_ProjectFullName()  {return string_ProjectFullName;}
     QString get_ProjectName()      {return string_ProjectName;}
     QString get_ProjectStatus()    {return string_ProjectStatus;}
     QString get_ProjectZeroPoint() {return string_ProjectZeroPoint;}
@@ -96,6 +98,7 @@ public:
 
     void set_Material(QString str)         {string_Material = str;}
     void set_ProjectClamping(QString str)  {string_ProjectClamping = str;}
+    void set_ProjectFullName();
     void set_ProjectName(QString str)      {string_ProjectName = str;}
     void set_ProjectStatus(QString str)    {string_ProjectStatus = str;}
     void set_ProjectZeroPoint(QString str) {string_ProjectZeroPoint = str;}

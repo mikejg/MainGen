@@ -148,7 +148,7 @@ void MainWindow::showTable_Rustplan()
     int_Out_Size = toolList_OUT->getSize();
 
     //erzeuge erste Zeile mit ProjektNamen und Anzahl der verwendeten Werkzeuge
-    list_ToolDescription.append(QString(project->get_ProjectName() + "  %1 Werkzeuge").arg(int_Projects_Size));
+    list_ToolDescription.append(QString(project->get_ProjectFullName() + "  %1 Werkzeuge").arg(int_Projects_Size));
     list_ToolID.append(" ");
     list_ToolGL.append(" ");
     list_ToolAL.append(" ");
