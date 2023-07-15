@@ -83,14 +83,6 @@ DialogStart::~DialogStart()
     delete ui;
 }
 
-/*void DialogStart::showDialog()
-{
-    if(firstStart)
-        this->show();
-
-    firstStart = false;
-}*/
-
 void DialogStart::slot_CheckInput()
 {
     QString string_ProjectName;
@@ -265,6 +257,7 @@ void DialogStart::slot_CheckInput()
     project->set_RohteilY(ui->lineEdit_RTy->text());
     project->set_RohteilZ(ui->lineEdit_RTz->text());
 
+
     project->set_ZRohteil(QString("%1").arg(ui->doubleSpinBox_ZRohTeil->value()));
 
     switch (ui->comboBox_Clamping->currentIndex())
@@ -298,6 +291,7 @@ void DialogStart::slot_CheckInput()
     }
 
     project->set_ProjectFullName();
+    project->set_RepetitiveManufacturing();
 
     /* Wenn das maximale Aufmass vom Rohteil definert wurde rechne das Aufmass auf das Bauteil um
        Ansonsten übernimm die Werte aus den SpinBoxen*/
@@ -312,7 +306,8 @@ void DialogStart::slot_CheckInput()
         project->set_XMinus_Max(QString("%1").arg(ui->doubleSpinBox_Xminus_Max->value() + double_AufmassX));
         project->set_YPlus_Max(QString("%1").arg(ui->doubleSpinBox_Yplus_Max->value() + double_AufmassY));
         project->set_YMinus_Max(QString("%1").arg(ui->doubleSpinBox_Yminus_Max->value() + double_AufmassY));
-        project->set_ZPlus_Max(QString("%1").arg(ui->doubleSpinBox_Zplus_Max->value()));
+        project->set_ZPlus_Max(QString("%1").arg(ui->doubleSpinBox_Zplus_Max->value() +
+                                                 ui->doubleSpinBox_ZRohTeil->value()));
     }
     else
     {
@@ -320,7 +315,8 @@ void DialogStart::slot_CheckInput()
         project->set_XMinus_Max(QString("%1").arg(ui->doubleSpinBox_Xminus_Max->value()));
         project->set_YPlus_Max(QString("%1").arg(ui->doubleSpinBox_Yplus_Max->value()));
         project->set_YMinus_Max(QString("%1").arg(ui->doubleSpinBox_Yminus_Max->value()));
-        project->set_ZPlus_Max(QString("%1").arg(ui->doubleSpinBox_Zplus_Max->value()));
+        project->set_ZPlus_Max(QString("%1").arg(ui->doubleSpinBox_Zplus_Max->value() +
+                                                 ui->doubleSpinBox_ZRohTeil->value()));
     }
 
     project->set_XPlus_Min(QString("%1").arg(ui->doubleSpinBox_Xplus_Min->value()));
@@ -383,6 +379,7 @@ bool DialogStart::load_Material()
 
     return true;
 }
+
 bool DialogStart::load_ZeroPoint()
 {
     QStringList stringList_Split;

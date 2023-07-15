@@ -9,6 +9,77 @@ Parser_PlaceHolder::Parser_PlaceHolder(QObject *parent)
     connect(mfile, SIGNAL(sig_Log(QString)), this, SIGNAL(sig_Log(QString)));
 }
 
+QStringList Parser_PlaceHolder::set_PlaceHolder_Antasten(QStringList stringList_Content, Project* project)
+{
+    QStringList stringList_ReturnList;
+
+    foreach(QString string_Line, stringList_Content)
+    {
+        if(string_Line.startsWith("#"))
+            continue;
+
+        string_Line = string_Line.replace("$RX$", project->get_RohteilX());
+        string_Line = string_Line.replace("$RY$", project->get_RohteilY());
+        string_Line = string_Line.replace("$ZRT$", project->get_ZRohteil());
+        stringList_ReturnList.append(string_Line);
+    }
+
+    return stringList_ReturnList;
+}
+
+QStringList Parser_PlaceHolder::set_PlaceHolder_Cleaning(QStringList stringList_Content, Project* project)
+{
+    QStringList stringList_ReturnList;
+
+    foreach(QString string_Line, stringList_Content)
+    {
+        if(string_Line.startsWith("#"))
+            continue;
+
+        string_Line = string_Line.replace("$RZ$", project->get_RohteilZ());
+        stringList_ReturnList.append(string_Line);
+    }
+
+    return stringList_ReturnList;
+}
+
+QStringList Parser_PlaceHolder::set_PlaceHolder_BlankControl(QStringList stringList_Content, Project* project)
+{
+    QStringList stringList_ReturnList;
+
+    foreach(QString string_Line, stringList_Content)
+    {
+        if(string_Line.startsWith("#"))
+            continue;
+
+        string_Line = string_Line.replace("$ZRT$", project->get_ZRohteil());
+        //Rohteil
+        string_Line = string_Line.replace("$RX$", project->get_RohteilX());
+        string_Line = string_Line.replace("$RY$", project->get_RohteilY());
+        string_Line = string_Line.replace("$RZ$", project->get_RohteilZ());
+
+        //Fertigteil
+        string_Line = string_Line.replace("$BX$", project->get_BauteilX());
+        string_Line = string_Line.replace("$BY$", project->get_BauteilY());
+        string_Line = string_Line.replace("$BZ$", project->get_BauteilZ());
+
+        string_Line = string_Line.replace("$Aufmass_Xplus_Max$",  project->get_XPlus_Max());
+        string_Line = string_Line.replace("$Aufmass_Xminus_Max$", project->get_XMinus_Max());
+        string_Line = string_Line.replace("$Aufmass_Yplus_Max$",  project->get_YPlus_Max());
+        string_Line = string_Line.replace("$Aufmass_Yminus_Max$", project->get_YMinus_Max());
+        string_Line = string_Line.replace("$Aufmass_Zplus_Max$",  project->get_ZPlus_Max());
+
+        string_Line= string_Line.replace("$Aufmass_Xplus_Min$" , project->get_XPlus_Min());
+        string_Line= string_Line.replace("$Aufmass_Xminus_Min$", project->get_XMinus_Min());
+        string_Line= string_Line.replace("$Aufmass_Yplus_Min$" , project->get_YPlus_Min());
+        string_Line= string_Line.replace("$Aufmass_Yminus_Min$", project->get_YMinus_Min());
+        string_Line= string_Line.replace("$Aufmass_Zplus_Min$",  project->get_ZPlus_Min());
+        stringList_ReturnList.append(string_Line);
+    }
+
+    return stringList_ReturnList;
+}
+
 QStringList Parser_PlaceHolder::set_PlaceHolder_MainProgramm(QStringList stringList_Content, Project* project)
 {
     // stringList_Content in stringList_tmp kopieren

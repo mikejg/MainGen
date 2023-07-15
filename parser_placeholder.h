@@ -17,6 +17,9 @@ private:
 public:
     explicit Parser_PlaceHolder(QObject *parent = nullptr);
 
+    QStringList set_PlaceHolder_Antasten(QStringList, Project*);
+    QStringList set_PlaceHolder_Cleaning(QStringList, Project*);
+    QStringList set_PlaceHolder_BlankControl(QStringList, Project*);
     QStringList set_PlaceHolder_MainProgramm(QStringList, Project*);
 
 signals:

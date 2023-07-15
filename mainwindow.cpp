@@ -9,6 +9,12 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    QToolBar *toolbar = this->addToolBar("main toolbar");
+    action_Save = toolbar->addAction(QIcon(":/Icons/File_Save.png"),"Rüstplan Speichern");
+    action_Print = toolbar->addAction(QIcon(":/Icons/Print.png"),"Rüstplan Drucken");
+    action_FinishFile = toolbar->addAction(QIcon(":/Icons/Inspection.png"),"Finish einzelne Files");
+
     ui->tableView_Top100->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->tableView_Rustplan->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
@@ -52,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent)
     project = new Project(this);
     project->set_Settings(settings);
     project->set_DBManager(dbManager);
+    project->set_ToolList_IN(toolList_IN);
     connect(project, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
     connect(project, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
 
@@ -59,10 +66,31 @@ MainWindow::MainWindow(QWidget *parent)
     dialogStart = new DialogStart(this);
     connect(dialogStart, SIGNAL(allValid()), this, SLOT(slot_dialogStart_Closed()));
 
+    //DialogWrite initialisieren
+    dialogWrite = new DialogWrite(this);
+
+    //DialogRepetition initialisieren
+    dialogRepetition = new DialogRepetition(this);
+    connect(dialogRepetition, SIGNAL(accepted()), this, SLOT(slot_RepetitionAccepted()));
+
     //Parser_Variables initialisieren
     parser_PlaceHolder = new Parser_PlaceHolder(this);
     connect(parser_PlaceHolder, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
     connect(parser_PlaceHolder, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
+
+    //Parser_Programm initialisieren
+    parser_Programm = new Parser_Programm(this);
+    connect(parser_Programm, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
+    connect(parser_Programm, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
+
+    //Project_Saver initialisieren
+    project_Saver = new Project_Saver(this);
+    project_Saver->set_Project(project);
+    project_Saver->set_Settings(settings);
+    project_Saver->set_DialogWrite(dialogWrite);
+    project_Saver->set_DBManager(dbManager);
+    connect(project_Saver, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
+    connect(project_Saver, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
 
     //mfile initialisieren und Connection herstellen
     mfile = new MFile(this);
@@ -71,6 +99,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     //connection Menu
     connect(ui->action_Print, SIGNAL(triggered(bool)), this, SLOT(slot_Print(bool)));
+    connect(ui->action_Save, SIGNAL(triggered(bool)), this, SLOT(slot_Save(bool)));
+    connect(ui->action_FinishFile, SIGNAL(triggered(bool)), this, SLOT(slot_FinishFile(bool)));
+
+    //connection ToolBar
+    connect(action_Print, SIGNAL(triggered(bool)), this, SLOT(slot_Print(bool)));
+    connect(action_Save, SIGNAL(triggered(bool)), this, SLOT(slot_Save(bool)));
+    connect(action_FinishFile, SIGNAL(triggered(bool)), this, SLOT(slot_FinishFile(bool)));
+
     QTimer::singleShot(500,this,SLOT(slot_startApplication()));
 }
 
@@ -102,6 +138,164 @@ bool MainWindow::copyWerkzeugDB()
     {
         slot_Err(Q_FUNC_INFO + QString(" - konnte keine Sicherheitskopie von WerkzeugDB erstellen"));
         return false;
+    }
+    return true;
+}
+
+void MainWindow::FileNameMax(QStringList stringList_Errors)
+{
+    int maxLength = 0;
+    QString string_Balken;
+    bool bool_Balken = false;
+    foreach (QString str, stringList_Errors)
+    {
+        if(str.length() > maxLength)
+            maxLength = str.length();
+    }
+    string_Balken = "";
+    while(string_Balken.length() <= maxLength)
+    {
+        string_Balken = string_Balken + "-";
+    }
+    string_Balken = string_Balken +"---";
+
+    slot_Err(string_Balken);
+    foreach (QString str, stringList_Errors)
+    {
+        if(str == stringList_Errors.first())
+            bool_Balken = true;
+        while(str.length() < maxLength)
+            str = str + " ";
+        slot_Err("| " + str + " |");
+        if(bool_Balken)
+        {
+            slot_Err(string_Balken);
+            bool_Balken = false;
+        }
+    }
+    slot_Err(string_Balken);
+    this->setDisabled(true);
+
+}
+
+bool MainWindow::load_Programme()
+{
+    /* Erzeuge dir und setze den Pfad auf string_ProgrammDir
+     * setz den Filter auf SPF-Dateien */
+    QDir dir;
+    QStringList filters;
+    dir.setPath(settings->get_ProgrammDir());
+    filters << "*.spf";
+    dir.setNameFilters(filters);
+
+    /* Variable die ich später noch brauche */
+    QString string_shortName;
+    bool bool_OK;
+    int int_I;  Q_UNUSED(int_I);
+
+    /* Lösche alle Programme aus stringList_Programme */
+    stringList_Programme.clear();
+
+    stringList_Programme = dir.entryList(QDir::Files);
+
+    /*Erzeuge eine temporäre StringList tmp
+     * geh durch stringList_Programme
+     * wenn der Eintrag mit 1_ - 9_ stratet setze eine 0 davor
+     * Überprüfe die länge des Progammnamens abhängig ob
+     *  eine Nummerierung vorgesehen ist oder nicht
+     * schreibe den Eintrag in tmp*/
+    QStringList tmp;
+    foreach(QString str, stringList_Programme)
+    {
+        if (str.startsWith("1_") || str.startsWith("2_") || str.startsWith("3_") ||
+            str.startsWith("4_") || str.startsWith("5_") || str.startsWith("6_") ||
+            str.startsWith("7_") || str.startsWith("8_") || str.startsWith("9_") )
+        {
+            dir.rename(str, "0"+str);
+            str = "0" + str;
+        }
+
+        if(!settings->get_Numbering() && str.length() > 31)
+        {
+            if(str.startsWith("0"))
+            {
+                str = str.right(str.length()-1);
+                dir.rename("0"+ str, str);
+            }
+            QStringList stringList_Errors;
+            stringList_Errors.append("Datei: " + str + " zu lang");
+            stringList_Errors.append(" - Loeschen Sie die Datei");
+            stringList_Errors.append(" - Kürzen Sie den Komponentenjob");
+                stringList_Errors.append(" - Spielen sie die Datei neu aus");
+            stringList_Errors.append(" - Starten Sie die Applikation neu");
+            FileNameMax(stringList_Errors);
+            return false;
+        }
+
+        if(settings->get_Numbering() && str.length() > 28)
+        {
+            qDebug() << str << ": " << str.length();
+            if(str.startsWith("0"))
+            {
+                str = str.right(str.length()-1);
+                dir.rename("0"+ str, str);
+            }
+            QStringList stringList_Errors;
+            stringList_Errors.append("Datei: " + str + " zu lang");
+            stringList_Errors.append(" - Loeschen Sie die Datei");
+            stringList_Errors.append(" - Kürzen Sie den Komponentenjob");
+                stringList_Errors.append(" - Spielen sie die Datei neu aus");
+            stringList_Errors.append(" - Starten Sie die Applikation neu");
+            FileNameMax(stringList_Errors);
+            return false;
+        }
+
+        tmp.append(str);
+    }
+
+    /* Sortiere tmp
+     * Lösche alle Einträge in stringList_Programme
+     * geht durch tmp
+     * Schreibe alle Einträge von tmp in stringListProgramme*/
+    tmp.sort();
+    stringList_Programme.clear();
+
+    foreach(QString str, tmp)
+    {
+        /* Wenn keine Nummerierung der Programme vorgesehen ist */
+        if(!settings->get_Numbering())
+        {
+        /* Kopiere str nach string_shortName */
+        string_shortName = str;
+
+        /* Überprüfe ob das erste Zeichen von string_shortName eine
+             * Zahl ist. Das Ergebniss wird in bool_OK gespeichert */
+        int_I = string_shortName.left(1).toInt(&bool_OK, 10);
+
+        while(bool_OK)
+        {
+            /* Lösche das erste Zeichen von string_shortName */
+                string_shortName = string_shortName.right(string_shortName.length()-1);
+
+                /* Überprüfe ob das erste Zeichen von string_shortName eine Zahl ist */
+            int_I = string_shortName.left(1).toInt(&bool_OK, 10);
+
+            /* Wenn das erste Zeichen ein '_' ist wird bool_OK auf true gesetzt */
+            if(string_shortName.startsWith("_"))
+                bool_OK = true;
+        }
+
+        /* Benenne das SPF-File um */
+        dir.rename(str, string_shortName);
+
+        /* trage string_shortName in stringList_Progamme ein */
+        stringList_Programme.append(string_shortName);
+        }
+        else
+        {
+            /* trage str in d stringList_Programme ein */
+            stringList_Programme.append(str);
+        }
     }
     return true;
 }
@@ -268,6 +462,20 @@ void MainWindow::showTable_Top100()
     ui->tableView_Top100->show();
 }
 
+void MainWindow::slot_RepetitionAccepted()
+{
+    /* Abhängig vom radioButton_Repetition wird die Funktion
+     * 'save_MPF' mit true oder false aufgerufen */
+    if(dialogRepetition->radioButton_Repetition->isChecked())
+    {
+        project_Saver->slot_Save_Project(true);
+    }
+    else
+    {
+        project_Saver->slot_Save_Project(false);
+    }
+}
+
 void MainWindow::slot_dialogStart_Closed()
 {
     /* setze mfile den Pfad für das Hauptprogramm
@@ -294,6 +502,21 @@ void MainWindow::slot_Err(QString str)
     ui->textEdit_Log->setPalette(*paletteInValid);;
     ui->tabWidget->setCurrentWidget(ui->tab_Log);
     ui->textEdit_Log->append(str);
+}
+
+void MainWindow::slot_FinishFile(bool b)
+{
+    Q_UNUSED(b);
+    if(!parser_Programm->loadBruch())
+        return;
+    if(!load_Programme())
+        return;
+
+    ui->tabWidget->setCurrentWidget(ui->tab_Log);
+    foreach (QString string_Programm, stringList_Programme)
+    {
+        parser_Programm->finish(settings->get_ProgrammDir()+ "/" + string_Programm);
+    }
 }
 
 void MainWindow::slot_Log(QString str)
@@ -335,6 +558,25 @@ void MainWindow::slot_PrintPage(QPrinter *printer)
         slot_Err(Q_FUNC_INFO + QString(" - ") + tablePrinter.lastError());
         }
         painter.end();
+}
+
+void MainWindow::slot_Save(bool b)
+{
+        Q_UNUSED(b);
+
+        project->set_Content_MainProgramm(ui->textEdit);
+        /* Wenn es keine Wiederholfertigung ist schreibe das Projekt in die Datenbank */
+
+        if(project->get_RepetitiveManufacturing() == 0)
+        {
+            project_Saver->slot_Save_Project(true);
+            return;
+        }
+
+        // zeige den Auswahldialog Wiederholfertigung
+        dialogRepetition->show();
+        return;
+
 }
 
 void MainWindow::slot_startApplication()

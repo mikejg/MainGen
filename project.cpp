@@ -4,9 +4,9 @@
 Project::Project(QObject *parent)
     : QObject{parent}
 {
-    parserProgramm = new Parser_Programm(this);
-    connect(parserProgramm,  SIGNAL(sig_Err(QString)), this, SIGNAL(sig_Err(QString)));
-    connect(parserProgramm,  SIGNAL(sig_Log(QString)), this, SIGNAL(sig_Log(QString)));
+    parser_Programm = new Parser_Programm(this);
+    connect(parser_Programm,  SIGNAL(sig_Err(QString)), this, SIGNAL(sig_Err(QString)));
+    connect(parser_Programm,  SIGNAL(sig_Log(QString)), this, SIGNAL(sig_Log(QString)));
 
     toolList = new ToolList(this);
 }
@@ -94,7 +94,7 @@ bool Project::loadProjectData()
      * Wenn nicht sende eine Fehlermeldung*/
     foreach (QString string_Prg, stringList_Prg)
     {
-        string_ProjectName = parserProgramm->parseProjectName(dir_ProgrammDir.path() + "/" + string_Prg);
+        string_ProjectName = parser_Programm->parseProjectName(dir_ProgrammDir.path() + "/" + string_Prg);
         if(bool_first)
         {
             stringList_Projektnames.append(string_ProjectName);
@@ -123,7 +123,7 @@ bool Project::loadProjectData()
 
         //string_Projektname = "nichts";
         /* Zieh den ProjektNamen und ProjektStand aus dem CNC-Programm */
-        string_ProjectName = parserProgramm->parseProjectName(dir_ProgrammDir.path() + "/" + stringList_Prg.first());
+        string_ProjectName = parser_Programm->parseProjectName(dir_ProgrammDir.path() + "/" + stringList_Prg.first());
 
         /* Ersetze alle Leerzeichen durch einen Unterstrich */
         string_ProjectName = string_ProjectName.replace(" ", "_");
@@ -171,6 +171,7 @@ void Project::logProjectData()
     emit sig_Log("Rohteil:         " + string_RTx + " x " + string_RTy + " x " + string_RTz);
     emit sig_Log("Bauteil:         " + string_BTx + " x " + string_BTy + " x " + string_BTz);
     emit sig_Log("AntastPunkt Z    " + string_ZRT);
+    emit sig_Log("Wiederholfertig  " + QString("%1").arg(int_RepetitiveManufacturing));
 
     emit sig_Log("\nAufmasse vom Bauteil");
     emit sig_Log("XPlus_Max        " + string_XPlus_Max);
@@ -205,18 +206,33 @@ bool Project::loadProjectToolList()
         toolList->clear();
         foreach (QString str, stringList_Prg)
         {
-            if(!parserProgramm->parseProjectTool(string_ProgrammDir + "/"+ str, toolList))
+            if(!parser_Programm->parseProjectTool(string_ProgrammDir + "/"+ str, toolList))
             return false;
         }
         toolList->sort_ID();
         return true;
 }
 
+void Project::set_Content_MainProgramm(QTextEdit* textEdit)
+{
+    stringList_Content_MainProgramm = textEdit->toPlainText().split("\n");
+}
+
+void Project::set_DBManager(DBManager* dbm)
+{
+    dbManager = dbm;
+    parser_Programm->setDBManager(dbm);
+}
 void Project::set_ProjectFullName()
 {
         string_ProjectFullName = string_ProjectName + "_" +
                                  string_ProjectStatus + "_" +
                                  string_ProjectClamping;
+}
+
+void Project::set_RepetitiveManufacturing()
+{
+    int_RepetitiveManufacturing = dbManager->getWiederholFertigung(string_ProjectFullName);
 }
 
 void Project::set_Settings(Settings* s)

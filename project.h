@@ -2,6 +2,8 @@
 #define PROJECT_H
 
 #include <QObject>
+#include <QTextEdit>
+
 #include "settings.h"
 #include "toollist.h"
 #include "parser_programm.h"
@@ -10,6 +12,8 @@ class Project : public QObject
 {
     Q_OBJECT
 private:
+
+
     Settings* settings;
 
     QString string_ProgrammDir;
@@ -34,9 +38,14 @@ private:
     bool bool_Numbering;
 
     QStringList stringList_Prg;
+    QStringList stringList_Content_MainProgramm;
 
-    Parser_Programm* parserProgramm;
+    DBManager*       dbManager;
+
+    Parser_Programm* parser_Programm;
+    int              int_RepetitiveManufacturing;
     ToolList*        toolList;
+    ToolList*        toolList_IN;
 
 public:
     explicit Project(QObject *parent = nullptr);
@@ -63,16 +72,22 @@ public:
     QString get_ZPlus_Min()  {return string_ZPlus_Min;}
     QString get_ZPlus_Max()  {return string_ZPlus_Max;}
 
-    bool    get_AufmassMax()       {return bool_AufmassMax;}
-    QString get_MainProgramm()     {return string_MainProgramm;}
-    QString get_Material()         {return string_Material;}
-    QStringList get_Programms()    {return stringList_Prg;}
-    QString get_ProjectClamping()  {return string_ProjectClamping;}
-    QString get_ProjectFullName()  {return string_ProjectFullName;}
-    QString get_ProjectName()      {return string_ProjectName;}
-    QString get_ProjectStatus()    {return string_ProjectStatus;}
-    QString get_ProjectZeroPoint() {return string_ProjectZeroPoint;}
+    bool        get_AufmassMax()                 {return bool_AufmassMax;}
+    QStringList get_Content_MainProgramm()       {return stringList_Content_MainProgramm;}
+    QString     get_MainProgramm()               {return string_MainProgramm;}
+    QString     get_Material()                   {return string_Material;}
+    bool        get_Numbering()                  {return bool_Numbering;}
+    QString     get_ProgrammDir()                {return string_ProgrammDir;}
+    QStringList get_Programms()                  {return stringList_Prg;}
+    QString     get_ProjectClamping()            {return string_ProjectClamping;}
+    QString     get_ProjectFullName()            {return string_ProjectFullName;}
+    QString     get_ProjectName()                {return string_ProjectName;}
+    QString     get_ProjectStatus()              {return string_ProjectStatus;}
+    QString     get_ProjectZeroPoint()           {return string_ProjectZeroPoint;}
+    int         get_RepetitiveManufacturing()    {return int_RepetitiveManufacturing;}
+
     ToolList* get_ToolList()       {return toolList;}
+    ToolList* get_ToolList_IN()    {return toolList_IN;}
 
     void set_RohteilX(QString d) {string_RTx = d;}
     void set_RohteilY(QString d) {string_RTy = d;}
@@ -96,21 +111,25 @@ public:
     void set_ZPlus_Min(QString str)  {string_ZPlus_Min = str;}
     void set_ZPlus_Max(QString str)  {string_ZPlus_Max = str;}
 
+    void set_Content_MainProgramm(QTextEdit*);
+    void set_MainProgramm(QString str) {string_MainProgramm = str;}
     void set_Material(QString str)         {string_Material = str;}
     void set_ProjectClamping(QString str)  {string_ProjectClamping = str;}
     void set_ProjectFullName();
     void set_ProjectName(QString str)      {string_ProjectName = str;}
     void set_ProjectStatus(QString str)    {string_ProjectStatus = str;}
     void set_ProjectZeroPoint(QString str) {string_ProjectZeroPoint = str;}
-    void set_MainProgramm(QString str) {string_MainProgramm = str;}
+    void set_RepetitiveManufacturing();
 
+    void set_ToolList_IN(ToolList* tl) {toolList_IN = tl;}
     void frame_Error(QStringList);
 
     bool loadProjectData();
     void logProjectData();
     bool loadProjectToolList();
 
-    void set_DBManager(DBManager* dbm) {parserProgramm->setDBManager(dbm);}
+    void save(QTextEdit*);
+    void set_DBManager(DBManager* dbm);
     void set_Settings(Settings* s);
     bool sort_Programms();
 

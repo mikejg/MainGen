@@ -42,3 +42,22 @@ bool MFile::read_Content()
     return true;
 }
 
+void MFile::save(QStringList stringList)
+{
+    this->remove();
+    if(!this->open(QFile::WriteOnly))
+    {
+        emit sig_Err("Konnte " + fileName() + " nicht oeffenen");
+        return;
+    }
+
+    textStream_Write = new QTextStream(this);
+    textStream_Write->setAutoDetectUnicode(false);
+    textStream_Write->setEncoding(QStringConverter::Latin1);
+    foreach(QString str, stringList)
+    {
+        *textStream_Write << str << '\n';
+    }
+    this->close();
+    return;
+}

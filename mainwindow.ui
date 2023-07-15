@@ -108,8 +108,9 @@
     <property name="title">
      <string>Datei</string>
     </property>
-    <addaction name="action_Oeffnen"/>
+    <addaction name="action_Save"/>
     <addaction name="action_Print"/>
+    <addaction name="action_FinishFile"/>
    </widget>
    <addaction name="menuDatei"/>
   </widget>
@@ -124,15 +125,21 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="separator"/>
   </widget>
   <action name="action_Print">
    <property name="text">
     <string>Drucken</string>
    </property>
   </action>
-  <action name="action_Oeffnen">
+  <action name="action_Save">
    <property name="text">
-    <string>Öffnen</string>
+    <string>Speichern</string>
+   </property>
+  </action>
+  <action name="action_FinishFile">
+   <property name="text">
+    <string>Finish File</string>
    </property>
   </action>
  </widget>

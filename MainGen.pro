@@ -13,12 +13,15 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     dbManager.cpp \
+    dialogrepetition.cpp \
     dialogSettings.cpp \
     dialogStart.cpp \
+    dialogWrite.cpp \
     mfile.cpp \
     parser_placeholder.cpp \
     parser_programm.cpp \
     project.cpp \
+    project_saver.cpp \
     settings.cpp \
     tablemodel.cpp \
     tableprinter.cpp \
@@ -30,12 +33,15 @@ HEADERS += \
     magazin.h \
     mainwindow.h \
     dbManager.h \
+    dialogrepetition.h\
     dialogSettings.h \
     dialogStart.h \
+    dialogWrite.h \
     mfile.h \
     parser_placeholder.h \
     parser_programm.h \
     project.h \
+    project_saver.h \
     settings.h \
     tablemodel.h \
     tableprinter.h \
@@ -45,10 +51,15 @@ HEADERS += \
 
 FORMS += \
     mainwindow.ui \
+    dialogrepetition.ui \
     dialogSettings.ui \
-    dialogStart.ui
+    dialogStart.ui \
+    dialogWrite.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    Icons.qrc

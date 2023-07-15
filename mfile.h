@@ -11,6 +11,7 @@ class MFile : public QFile
 
 private:
     QTextStream* textStream_Read;
+    QTextStream* textStream_Write;
     QStringList  stringList_Content;
 
 public:
@@ -19,6 +20,7 @@ public:
 
     QStringList get_Content() {return stringList_Content;}
     bool        read_Content();
+    void        save(QStringList);
 
 signals:
     void sig_Err(QString);
