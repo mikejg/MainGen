@@ -10,5 +10,6 @@
         <file>Icons/Print.png</file>
         <file>Icons/Inspection.png</file>
         <file>Icons/Store_in_Database.png</file>
+        <file>Icons/AddFolder.png</file>
     </qresource>
 </RCC>

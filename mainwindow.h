@@ -16,6 +16,7 @@
 #include "mfile.h"
 #include "parser_placeholder.h"
 #include "project.h"
+#include "project_loader.h"
 #include "project_saver.h"
 #include "tablemodel.h"
 #include "tableprinter.h"
@@ -34,6 +35,7 @@ private:
     QPalette* paletteValid;
     QPalette* paletteInValid;
 
+    QAction *action_AddFile;
     QAction *action_Open;
     QAction *action_Save;
     QAction *action_Print;
@@ -55,6 +57,7 @@ private:
     MFile*              mfile;
     Parser_PlaceHolder* parser_PlaceHolder;
     Parser_Programm*    parser_Programm;
+    Project_Loader*     project_Loader;
     Project_Saver*      project_Saver;
     Project*            project;
     Settings*           settings;
@@ -81,14 +84,17 @@ public:
 signals:
 
 public slots:
-    void slot_RepetitionAccepted();
+
+    void slot_AddFile(bool);
     void slot_dialogStart_Closed();
     void slot_Err(QString);
     void slot_FinishFile(bool b);
     void slot_LicenseFaild();
     void slot_Log(QString);
+    void slot_Open(bool);
     void slot_Print(bool);
     void slot_PrintPage(QPrinter*);
+    void slot_RepetitionAccepted();
     void slot_startApplication();
     void slot_Save(bool b);
 

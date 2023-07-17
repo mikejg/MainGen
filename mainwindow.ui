@@ -108,6 +108,7 @@
     <property name="title">
      <string>Datei</string>
     </property>
+    <addaction name="action_Open_2"/>
     <addaction name="action_Save"/>
     <addaction name="action_Print"/>
     <addaction name="action_FinishFile"/>
@@ -140,6 +141,16 @@
   <action name="action_FinishFile">
    <property name="text">
     <string>Finish File</string>
+   </property>
+  </action>
+  <action name="action_Open">
+   <property name="text">
+    <string>Öffnen</string>
+   </property>
+  </action>
+  <action name="action_Open_2">
+   <property name="text">
+    <string>Öffnen</string>
    </property>
   </action>
  </widget>

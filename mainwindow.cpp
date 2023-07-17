@@ -11,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     QToolBar *toolbar = this->addToolBar("main toolbar");
+    action_Open = toolbar->addAction(QIcon(":/Icons/File_Open.png"),"Rüstplan Öffnen");
+    action_AddFile = toolbar->addAction(QIcon(":/Icons/AddFolder.png"),"Rüstplan hinzufügen");
     action_Save = toolbar->addAction(QIcon(":/Icons/File_Save.png"),"Rüstplan Speichern");
     action_Print = toolbar->addAction(QIcon(":/Icons/Print.png"),"Rüstplan Drucken");
     action_FinishFile = toolbar->addAction(QIcon(":/Icons/Inspection.png"),"Finish einzelne Files");
@@ -92,17 +94,26 @@ MainWindow::MainWindow(QWidget *parent)
     connect(project_Saver, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
     connect(project_Saver, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
 
+    //Project_Loader initialisieren
+    project_Loader = new Project_Loader(this);
+    project_Loader->set_DBManager(dbManager);
+    connect(project_Loader, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
+    connect(project_Loader, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
+
     //mfile initialisieren und Connection herstellen
     mfile = new MFile(this);
     connect(mfile, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
     connect(mfile, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
 
     //connection Menu
+    connect(ui->action_Open_2, SIGNAL(triggered(bool)), this, SLOT(slot_Open(bool)));
     connect(ui->action_Print, SIGNAL(triggered(bool)), this, SLOT(slot_Print(bool)));
     connect(ui->action_Save, SIGNAL(triggered(bool)), this, SLOT(slot_Save(bool)));
     connect(ui->action_FinishFile, SIGNAL(triggered(bool)), this, SLOT(slot_FinishFile(bool)));
 
     //connection ToolBar
+    connect(action_AddFile, SIGNAL(triggered(bool)), this, SLOT(slot_AddFile(bool)));
+    connect(action_Open, SIGNAL(triggered(bool)), this, SLOT(slot_Open(bool)));
     connect(action_Print, SIGNAL(triggered(bool)), this, SLOT(slot_Print(bool)));
     connect(action_Save, SIGNAL(triggered(bool)), this, SLOT(slot_Save(bool)));
     connect(action_FinishFile, SIGNAL(triggered(bool)), this, SLOT(slot_FinishFile(bool)));
@@ -175,7 +186,6 @@ void MainWindow::FileNameMax(QStringList stringList_Errors)
     }
     slot_Err(string_Balken);
     this->setDisabled(true);
-
 }
 
 bool MainWindow::load_Programme()
@@ -462,6 +472,19 @@ void MainWindow::showTable_Top100()
     ui->tableView_Top100->show();
 }
 
+void MainWindow::slot_AddFile(bool b)
+{
+    Q_UNUSED(b);
+    QString string_FileName;
+    string_FileName = QFileDialog::getOpenFileName(this,"Schwester Projekt",
+                                                   QDir::homePath() +"/MainGen/Ruestplaene",tr("Rüstplan(*.rpl)"));
+
+                      if(!project_Loader->add_Project(string_FileName, project))
+                      this->setDisabled(true);
+
+    showTable_Rustplan();
+}
+
 void MainWindow::slot_RepetitionAccepted()
 {
     /* Abhängig vom radioButton_Repetition wird die Funktion
@@ -530,6 +553,20 @@ void MainWindow::slot_LicenseFaild()
     //dialogStart->close();
     slot_Err("Keine gültige Lizenz");
         QTimer::singleShot(5000, this, SLOT(close()));
+}
+
+void MainWindow::slot_Open(bool b)
+{
+    Q_UNUSED(b);
+    QString string_FileName;
+    string_FileName = QFileDialog::getOpenFileName(this,"Schwester Projekt",
+                                                   QDir::homePath() +"/MainGen/Ruestplaene",tr("Rüstplan(*.rpl)"));
+
+    if(!project_Loader->load_Project(string_FileName, project))
+        this->setDisabled(true);
+
+    showTable_Rustplan();
+
 }
 
 void MainWindow::slot_Print(bool b)

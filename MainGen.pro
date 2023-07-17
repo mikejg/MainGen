@@ -21,6 +21,7 @@ SOURCES += \
     parser_placeholder.cpp \
     parser_programm.cpp \
     project.cpp \
+    project_loader.cpp \
     project_saver.cpp \
     settings.cpp \
     tablemodel.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
     parser_placeholder.h \
     parser_programm.h \
     project.h \
+    project_loader.h \
     project_saver.h \
     settings.h \
     tablemodel.h \
