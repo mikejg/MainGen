@@ -6,7 +6,7 @@
 #include <QTimer>
 
 #include "dbManager.h"
-#include "dialogWrite.h"
+#include "dialogProgress.h"
 #include "mfile.h"
 #include "parser_placeholder.h"
 #include "parser_programm.h"
@@ -21,7 +21,7 @@ private:
 
     int                 counter;
     DBManager*          dbManager;
-    DialogWrite*        dialogWrite;
+    DialogProgress*     dialogProgress;
     Marker              marker;
     MFile*              mfile;
     Parser_PlaceHolder* parser_PlaceHolder;
@@ -53,7 +53,7 @@ public:
 
     bool save_Rustplan(QString, ToolList*);
     void set_DBManager(DBManager* dbm) {dbManager = dbm;}
-    void set_DialogWrite(DialogWrite* dw) {dialogWrite = dw;}
+    void set_DialogProgress(DialogProgress* dw) {dialogProgress = dw;}
     void set_Project(Project* p);
     void set_Settings(Settings* s) {settings = s;}
 

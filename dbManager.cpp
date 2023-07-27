@@ -8,6 +8,13 @@ DBManager::DBManager(QObject *parent) : QObject(parent)
     string_MainDB = QDir::homePath() + "/MainGen/mainGenDB.db";
     m_db = QSqlDatabase::addDatabase("QSQLITE");
     m_db.setDatabaseName(string_WerkzeugDB);
+
+    mfile = new MFile(this);
+    connect(mfile, SIGNAL(sig_Err(QString)), this, SIGNAL(sig_Err(QString)));
+    connect(mfile, SIGNAL(sig_Log(QString)), this, SIGNAL(sig_Log(QString)));
+
+    toolList = new ToolList(this);
+    timer = new QTimer(this);
 }
 
 DBManager::~DBManager()
@@ -37,10 +44,12 @@ void DBManager::open()
 
 void DBManager::clearDB()
 {
+    qDebug() << Q_FUNC_INFO << " Start ";
     m_db.close();
     QFile dbFile(QDir::homePath() + "/MainGen/mainGenDB.db");
     dbFile.remove();
-    QFile::copy(QDir::homePath() + "/MainGen/mainGenDB_leer.db",QDir::homePath() + "/MainGen/mainGenDB.db");
+    QFile::copy(QDir::homePath() + "/MainGen/mainGenDB_leer.db", QDir::homePath() + "/MainGen/mainGenDB.db");
+    qDebug() << Q_FUNC_INFO << " END ";
     return;
 }
 
@@ -540,4 +549,124 @@ int DBManager::getWiederholFertigung(QString string_Projekt)
         int_Return++;
     }
     return int_Return;
+}
+
+void DBManager::restore()
+{
+    qDebug() << Q_FUNC_INFO << " Start ";
+    clearDB();
+    stringList_Rustplane.clear();
+
+    QFileInfoList fileInfoList_Rustplane;
+    QDir dir_Rustplane;
+
+    dir_Rustplane.setPath(QDir::homePath() + "/MainGen/Ruestplaene");
+    if(!dir_Rustplane.exists())
+    {
+        sig_Err(Q_FUNC_INFO + QString(" - Verzeichnis: ") + QDir::homePath() + QString("/MainGen/Ruestplaene ist nicht vorhanden"));
+        return;
+    }
+
+    fileInfoList_Rustplane = dir_Rustplane.entryInfoList();
+    foreach(QFileInfo fileInfo, fileInfoList_Rustplane)
+    {
+        if(fileInfo.fileName() != "." && fileInfo.fileName() != "..")
+        {
+            if(fileInfo.suffix() == "rpl")
+            {
+                stringList_Rustplane.append(fileInfo.absoluteFilePath());
+            }
+        }
+    }
+
+    dialogProgress->setMaximum(stringList_Rustplane.size());
+    dialogProgress->show();
+    counter = 0;
+    qDebug() << Q_FUNC_INFO << " END ";
+    timer->singleShot(500, this, SLOT(slot_InsertRPL()));
+}
+
+void DBManager::slot_InsertRPL()
+{
+    QString str = stringList_Rustplane.at(counter);
+    //QString string_RuestplanID;
+
+    stringList_Split.clear();
+
+    dialogProgress->setValue(str, counter);
+    QFileInfo fileInfo(str);
+    stringList_Split = fileInfo.baseName().split("_");
+
+    if(stringList_Split.size() < 4)
+    {
+        emit sig_Err("Falscher DateiName: " + fileInfo.baseName());
+        emit sig_Err("Zeichnungsnummer_Zeichnungsstand_Spannung_Wiederholfertigung");
+        emit sig_Err("Beispiel: E14207809_E02_Sp2_0");
+
+        counter++;
+        dialogProgress->update();
+        if(counter < stringList_Rustplane.size())
+            timer->singleShot(500, this, SLOT(slot_insertRPL()));
+        else
+            dialogProgress->hide();
+        return;
+    }
+
+    string_Project = stringList_Split.at(0) + "_" +
+                     stringList_Split.at(1) + "_" +
+                     stringList_Split.at(2);
+
+    int wf = getWiederholFertigung(string_Project);
+    string_WiederholFertigung = QString("%1").arg(wf);
+
+    toolList->clear();
+
+    /*Übergibt dem DBManager den Projektnamen und die toolList zum Eintragen*/
+    if(parse_Rustplan(str))
+        insertProject(string_Project + "_" + string_WiederholFertigung, toolList);
+
+    counter++;
+    dialogProgress->update();
+    if(counter < stringList_Rustplane.size())
+        timer->singleShot(500, this, SLOT(slot_InsertRPL()));
+    else
+        dialogProgress->hide();
+}
+
+bool DBManager::parse_Rustplan(QString string_FileName)
+{
+    QStringList stringList_Content;
+    QString string_TNumber;
+    QStringList stringList_Parts;
+    Tool* tool = new Tool(this);
+
+    mfile->setFileName(string_FileName);
+    if(!mfile->read_Content())
+        return false;
+
+    stringList_Content = mfile->get_Content();
+
+    foreach(QString string_Line, stringList_Content)
+    {
+        //qDebug() << string_Line;
+        stringList_Parts = string_Line.split("||");
+        if(stringList_Parts.size() >= 4)
+        {
+            tool->clear();
+
+            string_TNumber = stringList_Parts.at(0);
+            string_TNumber = string_TNumber.remove(" ");
+            tool->set_Number(string_TNumber);
+            tool->set_ToolGL(stringList_Parts.at(2));
+            tool->set_ToolAL(stringList_Parts.at(3));
+            tool->set_ToolFL(this->getFreistellLaenge(string_TNumber));
+            //string_TDescription = stringList_Parts.at(1);
+            tool->set_Description(this->getDescription(string_TNumber));
+            tool->set_HalterName(this->getHolder(string_TNumber));
+            toolList->insert_Tool(tool);
+            //sig_Log(Q_FUNC_INFO + string_TNumber + QString(" | ") + tool->get_HalterName());
+        }
+    }
+
+    return true;
 }

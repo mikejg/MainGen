@@ -18,37 +18,6 @@ DialogStart::DialogStart(QWidget *parent) :
 
     ui->comboBox_Material->addItem("*");
 
-    /*lineEdit_ProjectName   = ui->lineEdit_ProjectName;
-    lineEdit_ProjectStatus = ui->lineEdit_ProjectStatus;
-
-    lineEdit_RohteilX = ui->lineEdit_X;
-    lineEdit_RohteilY = ui->lineEdit_Y;
-    lineEdit_RohteilZ = ui->lineEdit_Z;
-
-    lineEdit_BauteilX = ui->lineEdit_BTx;
-    lineEdit_BauteilY = ui->lineEdit_BTy;
-    lineEdit_BauteilZ = ui->lineEdit_BTz;
-
-    comboBox_Material =  ui->comboBox_Material;
-    comboBox_NP       =  ui->comboBox_NP;
-    lineEdit_NP       =  ui->lineEdit_NP;
-
-    doubleSpinBox_ZRohTeil = ui->doubleSpinBox_ZRohTeil;
-
-    doubleSpinBox_Aufmass_Xplus_Max  = ui->doubleSpinBox_Xplus_Max;
-    doubleSpinBox_Aufmass_Xminus_Max = ui->doubleSpinBox_Xminus_Max;
-    doubleSpinBox_Aufmass_Yplus_Max  = ui->doubleSpinBox_Yplus_Max;
-    doubleSpinBox_Aufmass_Yminus_Max = ui->doubleSpinBox_Yminus_Max;
-    doubleSpinBox_Aufmass_Zplus_Max  = ui->doubleSpinBox_Zplus_Max;
-
-    doubleSpinBox_Aufmass_Xplus_Min  = ui->doubleSpinBox_FT_Xplus;
-    doubleSpinBox_Aufmass_Xminus_Min = ui->doubleSpinBox_FT_Xminus;
-    doubleSpinBox_Aufmass_Yplus_Min  = ui->doubleSpinBox_FT_Yplus;
-    doubleSpinBox_Aufmass_Yminus_Min = ui->doubleSpinBox_FT_Yminus;
-    doubleSpinBox_Aufmass_Zplus_Min  = ui->doubleSpinBox_FT_Zplus;
-
-    groupBox_AufmassMaxRT = ui->groupBox_AufmassMaxRT;*/
-
     if(ui->checkBox_RT_EinzelAufmass->isChecked())
     {
         ui->widget_RT_AufmassEinzel->show();

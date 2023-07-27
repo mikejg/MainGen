@@ -7,6 +7,7 @@
 #include <QPrintPreviewDialog>
 #include <QTableView>
 
+#include "c_algin.h"
 #include "dbManager.h"
 #include "dialogrepetition.h"
 #include "dialogSettings.h"
@@ -36,17 +37,20 @@ private:
     QPalette* paletteInValid;
 
     QAction *action_AddFile;
-    QAction *action_Open;
-    QAction *action_Save;
-    QAction *action_Print;
+    QAction *action_Export;
     QAction *action_FinishFile;
     QAction *action_ImportRpl;
+    QAction *action_Open;
+    QAction *action_Print;
+    QAction *action_RestoreDatabase;
+    QAction *action_ShowSettings;
 
+    C_Algin*            c_Algin;
     DBManager*          dbManager;
     DialogRepetition*   dialogRepetition;
     DialogSettings*     dialogSettings;
     DialogStart*        dialogStart;
-    DialogWrite*        dialogWrite;
+    DialogProgress*     dialogProgress;
     License*            license;
     QList<QString>      list_ToolID;
     QList<QString>      list_ToolDescription;
@@ -75,6 +79,7 @@ private:
     void showTable_Rustplan();
     void showTable_Top100();
 
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -88,6 +93,7 @@ public slots:
     void slot_AddFile(bool);
     void slot_dialogStart_Closed();
     void slot_Err(QString);
+    void slot_Export(bool b);
     void slot_FinishFile(bool b);
     void slot_LicenseFaild();
     void slot_Log(QString);
@@ -95,8 +101,10 @@ public slots:
     void slot_Print(bool);
     void slot_PrintPage(QPrinter*);
     void slot_RepetitionAccepted();
+    void slot_RestoreDatabase(bool);
+    void slot_ShowSettings(bool);
     void slot_startApplication();
-    void slot_Save(bool b);
+
 
 };
 #endif // MAINWINDOW_H

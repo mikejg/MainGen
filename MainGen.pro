@@ -9,6 +9,8 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    c_algin.cpp \
+    dialogProgress.cpp \
     magazin.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -16,7 +18,6 @@ SOURCES += \
     dialogrepetition.cpp \
     dialogSettings.cpp \
     dialogStart.cpp \
-    dialogWrite.cpp \
     mfile.cpp \
     parser_placeholder.cpp \
     parser_programm.cpp \
@@ -31,13 +32,14 @@ SOURCES += \
     license.cpp
 
 HEADERS += \
+    c_algin.h \
+    dialogProgress.h \
     magazin.h \
     mainwindow.h \
     dbManager.h \
     dialogrepetition.h\
     dialogSettings.h \
     dialogStart.h \
-    dialogWrite.h \
     mfile.h \
     parser_placeholder.h \
     parser_programm.h \
@@ -52,11 +54,12 @@ HEADERS += \
     license.h
 
 FORMS += \
+    c_algin.ui \
+    dialogProgress.ui \
     mainwindow.ui \
     dialogrepetition.ui \
     dialogSettings.ui \
-    dialogStart.ui \
-    dialogWrite.ui
+    dialogStart.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

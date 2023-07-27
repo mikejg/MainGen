@@ -47,8 +47,8 @@ void Project_Saver::init_Saving()
      * Zeige den Dialog an
      * starte slot_nextProgramm*/
     counter = 0;
-    dialogWrite->initDialog(stringList_Programme);
-    dialogWrite->show();
+    dialogProgress->initDialog(stringList_Programme);
+    dialogProgress->show();
     timer->singleShot(0, this, SLOT(slot_nextProgramm()));
 }
 
@@ -234,7 +234,7 @@ void Project_Saver::set_Project(Project* p)
 void Project_Saver::slot_nextProgramm()
 {
     string_Programm = stringList_Programme.at(counter);
-    dialogWrite->setValue(string_Programm, counter);
+    dialogProgress->setValue(string_Programm, counter);
 
     parser_Programm->finish(string_ProgrammDir+ "/" + string_Programm);
 
@@ -244,7 +244,7 @@ void Project_Saver::slot_nextProgramm()
     QFile::remove(string_ProgrammDir + QDir::separator() + string_Programm);
 
     counter++;
-    dialogWrite->update();
+    dialogProgress->update();
     if(counter < stringList_Programme.size())
         timer->singleShot(500, this, SLOT(slot_nextProgramm()));
     else
@@ -288,7 +288,7 @@ void Project_Saver::slot_nextProgramm()
                                      project->get_ToolList());
 
         }
-        dialogWrite->hide();
+        dialogProgress->hide();
         //emit sig_Finished();
     }
 }

@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>807</width>
-    <height>591</height>
+    <width>729</width>
+    <height>544</height>
    </rect>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>16777215</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>MainGen</string>
@@ -18,7 +24,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>4</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab_Editor">
        <property name="minimumSize">
@@ -70,10 +76,11 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_3">
+      <widget class="C_Algin" name="tab_C_Algin">
        <attribute name="title">
-        <string>Seite</string>
+        <string>C Ausrichten</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_6"/>
       </widget>
       <widget class="QWidget" name="tab_Log">
        <attribute name="title">
@@ -100,7 +107,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>807</width>
+     <width>729</width>
      <height>21</height>
     </rect>
    </property>
@@ -109,11 +116,20 @@
      <string>Datei</string>
     </property>
     <addaction name="action_Open_2"/>
-    <addaction name="action_Save"/>
+    <addaction name="action_Export"/>
     <addaction name="action_Print"/>
     <addaction name="action_FinishFile"/>
+    <addaction name="separator"/>
+    <addaction name="action_Settings"/>
+   </widget>
+   <widget class="QMenu" name="menuDatenbank">
+    <property name="title">
+     <string>Datenbank</string>
+    </property>
+    <addaction name="action_RestoreDatabase"/>
    </widget>
    <addaction name="menuDatei"/>
+   <addaction name="menuDatenbank"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -133,9 +149,9 @@
     <string>Drucken</string>
    </property>
   </action>
-  <action name="action_Save">
+  <action name="action_Export">
    <property name="text">
-    <string>Speichern</string>
+    <string>Export</string>
    </property>
   </action>
   <action name="action_FinishFile">
@@ -153,7 +169,25 @@
     <string>Öffnen</string>
    </property>
   </action>
+  <action name="action_Settings">
+   <property name="text">
+    <string>Einstellungen</string>
+   </property>
+  </action>
+  <action name="action_RestoreDatabase">
+   <property name="text">
+    <string>Wiederherstellen</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>C_Algin</class>
+   <extends>QWidget</extends>
+   <header>c_algin.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

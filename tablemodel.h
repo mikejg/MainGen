@@ -5,6 +5,7 @@
 #include <QBrush>
 #include <QColor>
 #include <QFont>
+#include <QVariant>
 
 class TableModel : public QAbstractTableModel
 {

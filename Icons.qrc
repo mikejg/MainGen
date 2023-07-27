@@ -11,5 +11,18 @@
         <file>Icons/Inspection.png</file>
         <file>Icons/Store_in_Database.png</file>
         <file>Icons/AddFolder.png</file>
+        <file>Icons/Export.png</file>
+        <file>Icons/database.png</file>
+        <file>Icons/settings.png</file>
+        <file>Icons/CAlgin/C_Algin_ZMinus1.png</file>
+        <file>Icons/CAlgin/C_Algin_XPlus1.png</file>
+        <file>Icons/CAlgin/C_Algin_ZMinus2.png</file>
+        <file>Icons/CAlgin/C_Algin_XPlus2.png</file>
+        <file>Icons/CAlgin/C_Algin_XMinus1.png</file>
+        <file>Icons/CAlgin/C_Algin_XMinus2.png</file>
+        <file>Icons/CAlgin/C_Algin_YMinus1.png</file>
+        <file>Icons/CAlgin/C_Algin_YMinus2.png</file>
+        <file>Icons/CAlgin/C_Algin_YPlus1.png</file>
+        <file>Icons/CAlgin/C_Algin_YPlus2.png</file>
     </qresource>
 </RCC>

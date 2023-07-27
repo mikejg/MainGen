@@ -9,16 +9,22 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    //c_Algin = new C_Algin(ui->tab_C_Algin);
 
     QToolBar *toolbar = this->addToolBar("main toolbar");
     action_Open = toolbar->addAction(QIcon(":/Icons/File_Open.png"),"Rüstplan Öffnen");
     action_AddFile = toolbar->addAction(QIcon(":/Icons/AddFolder.png"),"Rüstplan hinzufügen");
-    action_Save = toolbar->addAction(QIcon(":/Icons/File_Save.png"),"Rüstplan Speichern");
+    action_Export = toolbar->addAction(QIcon(":/Icons/Export.png"),"Packet Exportieren");
     action_Print = toolbar->addAction(QIcon(":/Icons/Print.png"),"Rüstplan Drucken");
     action_FinishFile = toolbar->addAction(QIcon(":/Icons/Inspection.png"),"Finish einzelne Files");
+    action_ShowSettings = toolbar->addAction(QIcon(":/Icons/settings.png"),"Einstellungen");
+    action_RestoreDatabase = toolbar->addAction(QIcon(":/Icons/database.png"),"Datenbank wiederherstellen");
 
     ui->tableView_Top100->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->tableView_Rustplan->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
+    //Tab C Ausrichten einrichten
+
 
     toolList_IN          = new ToolList(this);
     toolList_OUT         = new ToolList(this);
@@ -44,8 +50,12 @@ MainWindow::MainWindow(QWidget *parent)
     license->setSettings(settings);
     connect(license,SIGNAL(sig_LicenseFailed()), this, SLOT(slot_LicenseFaild()));
 
+    //DialogProgress initialisieren
+    dialogProgress = new DialogProgress(this);
+
     //dbManager initialisieren
     dbManager = new DBManager(this);
+    dbManager->set_DialogProgress(dialogProgress);
     connect(dbManager, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
     connect(dbManager, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
 
@@ -68,9 +78,6 @@ MainWindow::MainWindow(QWidget *parent)
     dialogStart = new DialogStart(this);
     connect(dialogStart, SIGNAL(allValid()), this, SLOT(slot_dialogStart_Closed()));
 
-    //DialogWrite initialisieren
-    dialogWrite = new DialogWrite(this);
-
     //DialogRepetition initialisieren
     dialogRepetition = new DialogRepetition(this);
     connect(dialogRepetition, SIGNAL(accepted()), this, SLOT(slot_RepetitionAccepted()));
@@ -89,7 +96,7 @@ MainWindow::MainWindow(QWidget *parent)
     project_Saver = new Project_Saver(this);
     project_Saver->set_Project(project);
     project_Saver->set_Settings(settings);
-    project_Saver->set_DialogWrite(dialogWrite);
+    project_Saver->set_DialogProgress(dialogProgress);
     project_Saver->set_DBManager(dbManager);
     connect(project_Saver, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
     connect(project_Saver, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
@@ -106,17 +113,20 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mfile, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
 
     //connection Menu
+    connect(ui->action_Export, SIGNAL(triggered(bool)), this, SLOT(slot_Export(bool)));
+    connect(ui->action_FinishFile, SIGNAL(triggered(bool)), this, SLOT(slot_FinishFile(bool)));
     connect(ui->action_Open_2, SIGNAL(triggered(bool)), this, SLOT(slot_Open(bool)));
     connect(ui->action_Print, SIGNAL(triggered(bool)), this, SLOT(slot_Print(bool)));
-    connect(ui->action_Save, SIGNAL(triggered(bool)), this, SLOT(slot_Save(bool)));
-    connect(ui->action_FinishFile, SIGNAL(triggered(bool)), this, SLOT(slot_FinishFile(bool)));
+    connect(ui->action_Settings, SIGNAL(triggered(bool)), this, SLOT(slot_ShowSettings(bool)));
 
     //connection ToolBar
     connect(action_AddFile, SIGNAL(triggered(bool)), this, SLOT(slot_AddFile(bool)));
     connect(action_Open, SIGNAL(triggered(bool)), this, SLOT(slot_Open(bool)));
     connect(action_Print, SIGNAL(triggered(bool)), this, SLOT(slot_Print(bool)));
-    connect(action_Save, SIGNAL(triggered(bool)), this, SLOT(slot_Save(bool)));
+    connect(action_Export, SIGNAL(triggered(bool)), this, SLOT(slot_Export(bool)));
     connect(action_FinishFile, SIGNAL(triggered(bool)), this, SLOT(slot_FinishFile(bool)));
+    connect(action_ShowSettings, SIGNAL(triggered(bool)), this, SLOT(slot_ShowSettings(bool)));
+    connect(action_RestoreDatabase, SIGNAL(triggered(bool)), this, SLOT(slot_RestoreDatabase(bool)));
 
     QTimer::singleShot(500,this,SLOT(slot_startApplication()));
 }
@@ -152,6 +162,8 @@ bool MainWindow::copyWerkzeugDB()
     }
     return true;
 }
+
+
 
 void MainWindow::FileNameMax(QStringList stringList_Errors)
 {
@@ -597,7 +609,7 @@ void MainWindow::slot_PrintPage(QPrinter *printer)
         painter.end();
 }
 
-void MainWindow::slot_Save(bool b)
+void MainWindow::slot_Export(bool b)
 {
         Q_UNUSED(b);
 
@@ -614,6 +626,17 @@ void MainWindow::slot_Save(bool b)
         dialogRepetition->show();
         return;
 
+}
+
+void MainWindow::slot_RestoreDatabase(bool b)
+{
+        Q_UNUSED(b);
+        dbManager->restore();
+}
+void MainWindow::slot_ShowSettings(bool b)
+{
+    Q_UNUSED(b);
+    dialogSettings->show();
 }
 
 void MainWindow::slot_startApplication()
