@@ -328,6 +328,7 @@ bool MainWindow::load_Programme()
 
 void MainWindow::showTable_Rustplan()
 {
+    qDebug() << Q_FUNC_INFO;
     /* Vorbereitung für den Rüstplan */
     toolList_IN->clear();
     toolList_OUT->clear();
@@ -521,6 +522,7 @@ void MainWindow::slot_RepetitionAccepted()
 
 void MainWindow::slot_dialogStart_Closed()
 {
+    qDebug() << Q_FUNC_INFO;
     /* setze mfile den Pfad für das Hauptprogramm
      * lese das Hauptprogramm ein
      * wenn es einen Fehler beim einlesen gibt verlasse die Funktion */
@@ -695,8 +697,8 @@ void MainWindow::slot_startApplication()
 
   /* erstelle eine neue ToolList für Top100
    * hol aus der DatenBank die Top 100*/
-  //toolList_Top100 = new ToolList(this);
-  //dbManager->getTop100(toolList_Top100);
+  toolList_Top100 = new ToolList(this);
+  dbManager->getTop100(toolList_Top100);
   //showTable_Top100();
 
   dialogStart->show();

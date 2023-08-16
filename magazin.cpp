@@ -50,6 +50,8 @@ void Magazin::contains(QString str, ToolList* list)
 
 bool Magazin::create_ToolList()
 {
+    QStringList stringList_ToolData;
+
     if(!mfile->read_Content())
         return false;
     toolList->clear();
@@ -108,22 +110,28 @@ bool Magazin::create_ToolList()
             }
             if(string_ToolID.contains("_"))
             {
+                stringList_ToolData = dbManager->getToolData(string_ToolID);
+                if(stringList_ToolData.size() < 4)
+                {
+                    sig_Err("Unvollstandige Tooldaten: " + string_ToolID);
+                    continue;
+                }
                 tool->clear();
                 tool->set_Number(string_ToolID);
-                tool->set_Description(dbManager->getDescription(string_ToolID));
-                tool->set_counter(dbManager->getCounter(string_ToolID));
+                tool->set_Description(stringList_ToolData.at(3));
+                //tool->set_Description(dbManager->getDescription(string_ToolID));
 
-                string_Temp = dbManager->getAusspannLaenge(string_ToolID);
+                string_Temp = stringList_ToolData.at(1);
                 if(string_Temp.length() > 7)
                     string_Temp = string_Temp.left(7);
                 tool->set_ToolAL(string_Temp);
 
-                string_Temp = dbManager->getFreistellLaenge(string_ToolID);
+                string_Temp = stringList_ToolData.at(2);
                 if(string_Temp.length() > 7)
                     string_Temp = string_Temp.left(7);
                 tool->set_ToolFL(string_Temp);
 
-                string_Temp = dbManager->getGesamtLaenge(string_ToolID);
+                string_Temp = stringList_ToolData.at(0);
                 if(string_Temp.length() > 7)
                     string_Temp = string_Temp.left(7);
                 tool->set_ToolGL(string_Temp);

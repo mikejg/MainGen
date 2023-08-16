@@ -56,7 +56,7 @@ public:
     void    open();
     void    restore();
     void    set_DialogProgress(DialogProgress* dp) {dialogProgress = dp;}
-
+    QStringList getToolData(QString);
 signals:
     void sig_Log(QString);
     void sig_Err(QString);

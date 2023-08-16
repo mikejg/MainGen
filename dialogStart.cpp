@@ -54,6 +54,7 @@ DialogStart::~DialogStart()
 
 void DialogStart::slot_CheckInput()
 {
+    //qDebug() << Q_FUNC_INFO;
     QString string_ProjectName;
     QString string_ProjectStatus;
     QString string_Komma;
@@ -297,6 +298,7 @@ void DialogStart::slot_CheckInput()
     project->set_Material(ui->comboBox_Material->currentText());
     project->logProjectData();
 
+    //qDebug() << "Emit allValid";
     emit allValid();
 }
 

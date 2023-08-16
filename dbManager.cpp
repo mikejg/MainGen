@@ -120,6 +120,46 @@ int DBManager::getCounter(QString toolID)
     return counter;
 }
 
+QStringList DBManager::getToolData(QString toolID)
+{
+    QStringList returnList;
+    bool bool_Hals = true;
+    QString string_FreistellLaenge = "0";
+
+    if(!openWerkzeugDB())
+        return returnList;
+
+    QSqlQuery query("select nc_number_str, "
+                    "gage_length, "
+                    "tool_length,"
+                    "nc_name, "
+                    "Tools.dbl_param5, Tools.bool_param2 "
+                    "FROM NCTools "
+                    "INNER JOIN Tools on "
+                    "Tools.id = NCTools.tool_id "
+                    "where NCTools.nc_number_str = '" + toolID + "';");
+
+    //qDebug() << query.lastQuery();
+    //qDebug() << query.lastError().text();
+
+    while (query.next())
+    {
+        returnList.append(query.value("gage_length").toString());
+        returnList.append(query.value("tool_length").toString());
+
+        string_FreistellLaenge = query.value("dbl_param5").toString();
+        bool_Hals = query.value("bool_param2").toBool();
+        if(!bool_Hals) string_FreistellLaenge = " - ";
+        returnList.append(string_FreistellLaenge);
+        bool_Hals = true;
+
+        returnList.append(query.value("nc_name").toString());
+        //qDebug() << returnList.size();
+    }
+
+    return returnList;
+}
+
 QString DBManager::getGesamtLaenge(QString toolID)
 {
     if(!openWerkzeugDB())
