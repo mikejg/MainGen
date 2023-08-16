@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     action_ShowSettings = toolbar->addAction(QIcon(":/Icons/settings.png"),"Einstellungen");
     action_RestoreDatabase = toolbar->addAction(QIcon(":/Icons/database.png"),"Datenbank wiederherstellen");
 
-    ui->tableView_Top100->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    //ui->tableView_Top100->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->tableView_Rustplan->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     //Tab C Ausrichten einrichten
@@ -60,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(dbManager, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
 
     //magazin initialisieren
-    magazin = new Magazin(this);
+    magazin = ui->tab_Magazin;
     magazin->set_FilePath(settings->get_MagazinDir() + "/Magazin.INI");
     magazin->set_DBManager(dbManager);
     connect(magazin, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
@@ -127,6 +127,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(action_FinishFile, SIGNAL(triggered(bool)), this, SLOT(slot_FinishFile(bool)));
     connect(action_ShowSettings, SIGNAL(triggered(bool)), this, SLOT(slot_ShowSettings(bool)));
     connect(action_RestoreDatabase, SIGNAL(triggered(bool)), this, SLOT(slot_RestoreDatabase(bool)));
+
+    //connect C_Algin
+    connect(ui->tab_C_Algin, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
+    connect(ui->tab_C_Algin, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
 
     QTimer::singleShot(500,this,SLOT(slot_startApplication()));
 }
@@ -357,7 +361,9 @@ void MainWindow::showTable_Rustplan()
     //Vergleiche Werkzeugmagazin mit Top100 und Projekt
     foreach(Tool* tool, magazin->get_ToolList()->getList())
     {
-        if(!toolList_Top100->contains(tool) && !toolList_Table->contains(tool))
+        if(!toolList_Top100->contains(tool) &&
+            !toolList_Table->contains(tool) &&
+            tool->get_State() == Tool::In)
             toolList_OUT->insert_Tool(tool);
     }
     toolList_OUT->sort_Counter();
@@ -441,9 +447,10 @@ void MainWindow::showTable_Rustplan()
     ui->tableView_Rustplan->show();
 }
 
+/*
 void MainWindow::showTable_Top100()
 {
-    /* Vorbereitung zum Anzeigen der Top 100 */
+    // Vorbereitung zum Anzeigen der Top 100
     list_ToolID.clear();
     list_ToolDescription.clear();
     list_ToolGL.clear();
@@ -483,6 +490,7 @@ void MainWindow::showTable_Top100()
     //tableView->horizontalHeader()->setVisible(true);
     ui->tableView_Top100->show();
 }
+*/
 
 void MainWindow::slot_AddFile(bool b)
 {
@@ -687,9 +695,9 @@ void MainWindow::slot_startApplication()
 
   /* erstelle eine neue ToolList für Top100
    * hol aus der DatenBank die Top 100*/
-  toolList_Top100 = new ToolList(this);
-  dbManager->getTop100(toolList_Top100);
-  showTable_Top100();
+  //toolList_Top100 = new ToolList(this);
+  //dbManager->getTop100(toolList_Top100);
+  //showTable_Top100();
 
   dialogStart->show();
 }

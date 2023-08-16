@@ -25,6 +25,7 @@ private:
     QString string_Project;
     QString string_WiederholFertigung;
     ToolList* toolList;
+    ToolList* searchList;
     QTimer* timer;
     bool openMainDB();
     bool openWerkzeugDB();
@@ -38,6 +39,7 @@ public:
 
     void    clearDB();
 
+    QString getGesamtLaenge(QString);
     QString getAusspannLaenge(QString toolID);
     QString getFreistellLaenge(QString toolID);
     QString getHolder(QString toolID);

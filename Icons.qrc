@@ -24,5 +24,7 @@
         <file>Icons/CAlgin/C_Algin_YMinus2.png</file>
         <file>Icons/CAlgin/C_Algin_YPlus1.png</file>
         <file>Icons/CAlgin/C_Algin_YPlus2.png</file>
+        <file>Icons/CAlgin/create.png</file>
+        <file>Icons/CAlgin/Picture.png</file>
     </qresource>
 </RCC>

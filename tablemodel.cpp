@@ -66,6 +66,8 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
                 list_Description[row].contains("EINLAGERN") ||
                 list_Description[row].contains("AUSLAGERN"))
                 return QBrush(Qt::darkGray);
+            //if(list_ID[row].contains("_X"))
+            //    return QBrush(Qt::red);
             break;
     //    break;
     //default:

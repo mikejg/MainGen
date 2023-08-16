@@ -14,6 +14,7 @@ DBManager::DBManager(QObject *parent) : QObject(parent)
     connect(mfile, SIGNAL(sig_Log(QString)), this, SIGNAL(sig_Log(QString)));
 
     toolList = new ToolList(this);
+    searchList = new ToolList(this);
     timer = new QTimer(this);
 }
 
@@ -117,6 +118,29 @@ int DBManager::getCounter(QString toolID)
 
     //qDebug() << QString("%1").arg(counter);
     return counter;
+}
+
+QString DBManager::getGesamtLaenge(QString toolID)
+{
+    if(!openWerkzeugDB())
+        return "";
+    QString string_GesamtLaenge;
+    string_GesamtLaenge = "0";
+
+    QSqlQuery query("select nc_number_str, gage_length from NCTools where nc_number_str = '" + toolID + "';");
+
+    //qDebug() << query.lastQuery();
+    //qDebug() << query.lastError().text();
+
+    //QSqlQuery query("SELECT id, T_Number, GesamtLaenge from NCTools "
+    //                "where T_Number = '" +
+    //                toolID + "';");
+
+    while (query.next())
+    {
+        string_GesamtLaenge = query.value("gage_length").toString();
+    }
+    return string_GesamtLaenge;
 }
 
 QString DBManager::getAusspannLaenge(QString toolID)

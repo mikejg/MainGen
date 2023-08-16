@@ -37,6 +37,7 @@ void ToolList::insert_Tool(Tool* tool, bool check)
        t->set_ToolFL(tool->get_ToolFL());
        t->set_HalterName(tool->get_HalterName());
        t->set_counter(tool->get_counter());
+       t->set_State(tool->get_State());
        list.append(t);
     }
 

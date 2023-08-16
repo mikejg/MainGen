@@ -62,19 +62,11 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_Top100">
+      <widget class="Magazin" name="tab_Magazin">
        <attribute name="title">
-        <string>Top 100</string>
+        <string>Magazin</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_4">
-        <item>
-         <widget class="QTableView" name="tableView_Top100">
-          <attribute name="horizontalHeaderStretchLastSection">
-           <bool>true</bool>
-          </attribute>
-         </widget>
-        </item>
-       </layout>
+       <layout class="QVBoxLayout" name="verticalLayout_4"/>
       </widget>
       <widget class="C_Algin" name="tab_C_Algin">
        <attribute name="title">
@@ -185,6 +177,12 @@
    <class>C_Algin</class>
    <extends>QWidget</extends>
    <header>c_algin.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Magazin</class>
+   <extends>QWidget</extends>
+   <header location="global">magazin.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

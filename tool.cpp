@@ -11,6 +11,7 @@ Tool::Tool(QObject *parent)
     freistellLaenge = " ";
     halterComment   = " ";
     halterName      = " ";
+    state           = Out;
 }
 
 void Tool::clear()
@@ -24,4 +25,17 @@ void Tool::clear()
     halterName      = " ";
 
     counter = 0;
+}
+
+QString Tool::get_StateString()
+{
+    QString string_Return = "";
+    if(state == Tool::In)
+        string_Return = "In";
+    if(state == Tool::Out)
+        string_Return = "Out";
+    if(state == Tool::Disassembled)
+        string_Return = "Disassembled";
+
+    return string_Return;
 }

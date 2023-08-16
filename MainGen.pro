@@ -12,6 +12,7 @@ SOURCES += \
     c_algin.cpp \
     dialogProgress.cpp \
     magazin.cpp \
+    magazinmodel.cpp \
     main.cpp \
     mainwindow.cpp \
     dbManager.cpp \
@@ -35,6 +36,7 @@ HEADERS += \
     c_algin.h \
     dialogProgress.h \
     magazin.h \
+    magazinmodel.h \
     mainwindow.h \
     dbManager.h \
     dialogrepetition.h\
@@ -56,6 +58,7 @@ HEADERS += \
 FORMS += \
     c_algin.ui \
     dialogProgress.ui \
+    magazin.ui \
     mainwindow.ui \
     dialogrepetition.ui \
     dialogSettings.ui \
