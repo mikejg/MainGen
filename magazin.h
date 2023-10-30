@@ -29,6 +29,8 @@ private:
     QList<QString> list_ToolAL;
     QList<QString> list_ToolFL;
     QList<QString> list_ToolState;
+    QList<QString> list_ToolSL;
+
     QString string_old;
 
     void contains(QString, ToolList*);
@@ -49,6 +51,7 @@ signals:
     void sig_Log(QString);
 
 public slots:
+    void slot_TableClicked(const QModelIndex &);
     void slot_textEdited(QString);
 };
 

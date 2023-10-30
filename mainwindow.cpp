@@ -23,9 +23,6 @@ MainWindow::MainWindow(QWidget *parent)
     //ui->tableView_Top100->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->tableView_Rustplan->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-    //Tab C Ausrichten einrichten
-
-
     toolList_IN          = new ToolList(this);
     toolList_OUT         = new ToolList(this);
     toolList_Table       = new ToolList(this);
@@ -36,6 +33,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     paletteValid = new QPalette();
     *paletteValid = palette();
+
+    bool_PrintIn = true;
+    bool_PrintOut = true;
+    bool_PrintProject = true;
 
     //Alles was man für die Einstellungen braucht
     settings = new Settings(this);
@@ -129,8 +130,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(action_RestoreDatabase, SIGNAL(triggered(bool)), this, SLOT(slot_RestoreDatabase(bool)));
 
     //connect C_Algin
+    ui->tab_C_Algin->setProject(project);
     connect(ui->tab_C_Algin, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
     connect(ui->tab_C_Algin, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
+
+    //connect Ruestplan
+    connect(ui->tableView_Rustplan, SIGNAL(clicked(const QModelIndex &)), this, SLOT(slot_TableClicked(const QModelIndex &)));
+
+    action_AddFile->setEnabled(false);
+    action_Export->setEnabled(false);
 
     QTimer::singleShot(500,this,SLOT(slot_startApplication()));
 }
@@ -166,8 +174,6 @@ bool MainWindow::copyWerkzeugDB()
     }
     return true;
 }
-
-
 
 void MainWindow::FileNameMax(QStringList stringList_Errors)
 {
@@ -326,23 +332,25 @@ bool MainWindow::load_Programme()
     return true;
 }
 
-void MainWindow::showTable_Rustplan()
+void MainWindow::showTable_Rustplan(bool bool_Print)
 {
-    qDebug() << Q_FUNC_INFO;
-    /* Vorbereitung für den Rüstplan */
+   /* Vorbereitung für den Rüstplan */
     toolList_IN->clear();
     toolList_OUT->clear();
     toolList_Table->clear();
+
     list_ToolID.clear();
     list_ToolDescription.clear();
     list_ToolGL.clear();
     list_ToolAL.clear();
     list_ToolFL.clear();
+    list_Counter.clear();
 
     int int_Projects_Size;
     int int_In_Size;
     int int_Out_Size;
     int int_Free_Size;
+    int int_Counter = 0;
 
     //Kopiere die ToolList aus dem Projekt in toolList_Table
     //sortiere toolList_Table nach der Tool_ID
@@ -370,71 +378,124 @@ void MainWindow::showTable_Rustplan()
     toolList_OUT->sort_Counter();
     int_Out_Size = toolList_OUT->getSize();
 
-    //erzeuge erste Zeile mit ProjektNamen und Anzahl der verwendeten Werkzeuge
-    list_ToolDescription.append(QString(project->get_ProjectFullName() + "  %1 Werkzeuge").arg(int_Projects_Size));
-    list_ToolID.append(" ");
-    list_ToolGL.append(" ");
-    list_ToolAL.append(" ");
-    list_ToolFL.append(" ");
-
-    //Füge die Werkzeuge ein
-    foreach(Tool* tool, toolList_Table->getList())
+    /* Wenn bool_Print = false ODER bool_PrintProject = true
+     * dann wird die Kopfzeile für das Projekt angezeig.
+     * Das bedeutet, wenn ein Druckauftrag ansteht und das Projekt
+     * ausgebledet werden soll wird die Kopfzeile ignoriert */
+    if(!bool_Print || bool_PrintProject)
     {
-        list_ToolDescription.append(tool->get_Description());
-        list_ToolID.append(tool->get_Number());
-        list_ToolGL.append(tool->get_ToolGL());
-        list_ToolAL.append(tool->get_ToolAL());
-        list_ToolFL.append(tool->get_ToolFL());
+        //erzeuge erste Zeile mit ProjektNamen und Anzahl der verwendeten Werkzeuge
+        list_ToolDescription.append(QString(project->get_ProjectFullName() + "  %1 Werkzeuge").arg(int_Projects_Size));
+        list_ToolID.append(" ");
+        list_ToolGL.append(" ");
+        list_ToolAL.append(" ");
+        list_ToolFL.append(" ");
+        list_Counter.append(" ");
     }
 
-    //erzeuge eine Leerzeile
-    list_ToolDescription.append(" ");
-    list_ToolID.append(" ");
-    list_ToolGL.append(" ");
-    list_ToolAL.append(" ");
-    list_ToolFL.append(" ");
-
-    //erzeuge eine Zeile: 10 Werkzeuge EINLAGERN - 15 Freie Plätze im Magazin"
-    int_Free_Size = settings->get_WerkzeugPlatze() - magazin->get_Size();
-    list_ToolDescription.append(QString("  %1 Werkzeuge EINLAGERN  -  %2 Frei Plätze im Magazin").arg(int_In_Size).arg(int_Free_Size));
-    list_ToolID.append(" ");
-    list_ToolGL.append(" ");
-    list_ToolAL.append(" ");
-    list_ToolFL.append(" ");
-
-    //Füge alle Werkzeuge aus der toolList_IN ein
-    foreach(Tool* tool, toolList_IN->getList())
+    /* Zeige die Werkzeuge für das Projekt nur an wenn bool_PrintProject = true
+     * bool_PrintProject wird im slot_TableClicked(const QModelIndex &)
+     * gesteuert. Wenn man auf die Kopfzeile klickt wird bool_PrintProject
+     * umgeschalten */
+    if(bool_PrintProject)
     {
-        list_ToolDescription.append(tool->get_Description());
-        list_ToolID.append(tool->get_Number());
-        list_ToolGL.append(tool->get_ToolGL());
-        list_ToolAL.append(tool->get_ToolAL());
-        list_ToolFL.append(tool->get_ToolFL());
+        //Füge die Werkzeuge ein
+        foreach(Tool* tool, toolList_Table->getList())
+        {
+            int_Counter++;
+            list_Counter.append(QString("%1").arg(int_Counter));
+            list_ToolDescription.append(tool->get_Description());
+            list_ToolID.append(tool->get_Number());
+            list_ToolGL.append(tool->get_ToolGL());
+            list_ToolAL.append(tool->get_ToolAL());
+            list_ToolFL.append(tool->get_ToolFL());
+        }
+
+        //erzeuge eine Leerzeile
+        list_ToolDescription.append(" ");
+        list_ToolID.append(" ");
+        list_ToolGL.append(" ");
+        list_ToolAL.append(" ");
+        list_ToolFL.append(" ");
+        list_Counter.append(" ");
     }
 
-    //erzeuge eine Leerzeile
-    list_ToolDescription.append(" ");
-    list_ToolID.append(" ");
-    list_ToolGL.append(" ");
-    list_ToolAL.append(" ");
-    list_ToolFL.append(" ");
-
-    //erzeuge eine Zeile: 15 Werkzeuge Auslagen
-    list_ToolDescription.append(QString("  %1 Werkzeuge AUSLAGERN ").arg(int_Out_Size));
-    list_ToolID.append(" ");
-    list_ToolGL.append(" ");
-    list_ToolAL.append(" ");
-    list_ToolFL.append(" ");
-
-    //Füge alle Werkzeuge aus der toolList_Out ein
-    foreach(Tool* tool, toolList_OUT->getList())
+    /* Dokumentation Siehe oben
+     * if(!bool_Print || bool_PrintProject) */
+    if(!bool_Print || bool_PrintIn)
     {
-        list_ToolDescription.append(tool->get_Description());
-        list_ToolID.append(tool->get_Number());
-        list_ToolGL.append(tool->get_ToolGL());
-        list_ToolAL.append(tool->get_ToolAL());
-        list_ToolFL.append(QString("%1").arg(tool->get_counter()));
+        //erzeuge eine Zeile: 10 Werkzeuge EINLAGERN - 15 Freie Plätze im Magazin"
+        int_Free_Size = settings->get_WerkzeugPlatze() - magazin->get_Size();
+        list_ToolDescription.append(QString("  %1 Werkzeuge EINLAGERN  -  %2 Frei Plätze im Magazin").arg(int_In_Size).arg(int_Free_Size));
+        list_ToolID.append(" ");
+        list_ToolGL.append(" ");
+        list_ToolAL.append(" ");
+        list_ToolFL.append(" ");
+        list_Counter.append(" ");
     }
+
+    /* Dokumentation Siehe oben
+     * if(bool_PrintProject) */
+    if(bool_PrintIn)
+    {
+        //Füge alle Werkzeuge aus der toolList_IN ein
+        foreach(Tool* tool, toolList_IN->getList())
+        {
+            int_Counter++;
+            list_Counter.append(QString("%1").arg(int_Counter));
+            list_ToolDescription.append(tool->get_Description());
+            list_ToolGL.append(tool->get_ToolGL());
+            list_ToolAL.append(tool->get_ToolAL());
+            list_ToolFL.append(tool->get_ToolFL());
+
+            qDebug() << tool->get_Number() << ": " << tool->get_State();
+            if(tool->get_State() == Tool::Disassembled)
+            {
+                list_ToolID.append(tool->get_Number() + "_X");
+            }
+            else
+                list_ToolID.append(tool->get_Number());
+        }
+
+        //erzeuge eine Leerzeile
+        list_ToolDescription.append(" ");
+        list_ToolID.append(" ");
+        list_ToolGL.append(" ");
+        list_ToolAL.append(" ");
+        list_ToolFL.append(" ");
+        list_Counter.append(" ");
+    }
+
+    /* Dokumentation Siehe oben
+     * if(!bool_Print || bool_PrintProject) */
+    if(!bool_Print || bool_PrintOut)
+    {
+        //erzeuge eine Zeile: 15 Werkzeuge Auslagen
+        list_ToolDescription.append(QString("  %1 Werkzeuge AUSLAGERN ").arg(int_Out_Size));
+        list_ToolID.append(" ");
+        list_ToolGL.append(" ");
+        list_ToolAL.append(" ");
+        list_ToolFL.append(" ");
+        list_Counter.append(" ");
+    }
+
+    /* Dokumentation Siehe oben
+     * if(bool_PrintProject) */
+    if(bool_PrintOut)
+    {
+        //Füge alle Werkzeuge aus der toolList_Out ein
+        foreach(Tool* tool, toolList_OUT->getList())
+        {
+            int_Counter++;
+            list_Counter.append(QString("%1").arg(int_Counter));
+            list_ToolDescription.append(tool->get_Description());
+            list_ToolID.append(tool->get_Number());
+            list_ToolGL.append(tool->get_ToolGL());
+            list_ToolAL.append(tool->get_ToolAL());
+            list_ToolFL.append(QString("%1").arg(tool->get_counter()));
+        }
+    }
+
     tableModel = new TableModel(this);
 
     // Populate model with data:
@@ -442,10 +503,15 @@ void MainWindow::showTable_Rustplan()
                              list_ToolDescription,
                              list_ToolGL,
                              list_ToolAL,
-                             list_ToolFL);
+                             list_ToolFL,
+                             list_Counter);
 
-    ui->tableView_Rustplan->setModel(tableModel);
-    ui->tableView_Rustplan->show();
+    //Wenn kein Druckauftrag besteht zeige das Model im TableView an
+    if(!bool_Print)
+    {
+        ui->tableView_Rustplan->setModel(tableModel);
+        ui->tableView_Rustplan->show();
+    }
 }
 
 /*
@@ -500,8 +566,8 @@ void MainWindow::slot_AddFile(bool b)
     string_FileName = QFileDialog::getOpenFileName(this,"Schwester Projekt",
                                                    QDir::homePath() +"/MainGen/Ruestplaene",tr("Rüstplan(*.rpl)"));
 
-                      if(!project_Loader->add_Project(string_FileName, project))
-                      this->setDisabled(true);
+    if(!project_Loader->add_Project(string_FileName, project))
+       this->setDisabled(true);
 
     showTable_Rustplan();
 }
@@ -539,7 +605,15 @@ void MainWindow::slot_dialogStart_Closed()
     }
 
     showTable_Rustplan();
+    action_Export->setEnabled(true
+                              );
+}
 
+void MainWindow::slot_dialogPrint_Finished(int result)
+{
+    //qDebug() << Q_FUNC_INFO;
+    Q_UNUSED(result);
+    showTable_Rustplan();
 }
 
 void MainWindow::slot_Err(QString str)
@@ -592,18 +666,23 @@ void MainWindow::slot_Open(bool b)
 }
 
 void MainWindow::slot_Print(bool b)
-{   Q_UNUSED(b);
+{
+    //qDebug() << "Start: " << Q_FUNC_INFO;
+    Q_UNUSED(b);
 
-        QPrintPreviewDialog dialog;
-        connect(&dialog, SIGNAL(paintRequested(QPrinter*)), this, SLOT(slot_PrintPage(QPrinter*)));
-        dialog.exec();
+    QPrintPreviewDialog dialogPrint;
+    connect(&dialogPrint, SIGNAL(paintRequested(QPrinter*)), this, SLOT(slot_PrintPage(QPrinter*)));
+    connect(&dialogPrint, SIGNAL(finished(int)), this, SLOT(slot_dialogPrint_Finished(int)));
+    dialogPrint.exec();
+    //qDebug() << "End: " << Q_FUNC_INFO << "\n";
 }
 
 void MainWindow::slot_PrintPage(QPrinter *printer)
 {
-
+    //qDebug() << "Start: " << Q_FUNC_INFO;
         // ------------------ simplest example --------------------------
 
+        showTable_Rustplan(true);
         QPainter painter;
         if(!painter.begin(printer)) {
         qWarning() << "can't start printer";
@@ -611,12 +690,15 @@ void MainWindow::slot_PrintPage(QPrinter *printer)
         }
         // print table
         TablePrinter tablePrinter(&painter, printer);
-        QVector<int> columnStretch = QVector<int>() << 5 << 3 << 2 << 2 << 20;
-        QVector<QString> columnHeaders = QVector<QString>() << "Tool ID" << "GL" << "AL" << "FL" << "Beschreibung";
-        if(!tablePrinter.printTable(ui->tableView_Rustplan->model(), columnStretch, columnHeaders)) {
-        slot_Err(Q_FUNC_INFO + QString(" - ") + tablePrinter.lastError());
+        QVector<int> columnStretch = QVector<int>() << 2 << 5 << 3 << 2 << 2 << 20;
+        QVector<QString> columnHeaders = QVector<QString>() << "Nr" << "Tool ID" << "GL" << "AL" << "FL" << "Beschreibung";
+        //if(!tablePrinter.printTable(ui->tableView_Rustplan->model(), columnStretch, columnHeaders))
+        if(!tablePrinter.printTable(tableModel, columnStretch, columnHeaders))
+        {
+            slot_Err(Q_FUNC_INFO + QString(" - ") + tablePrinter.lastError());
         }
         painter.end();
+    //qDebug() << "Start: " << Q_FUNC_INFO;
 }
 
 void MainWindow::slot_Export(bool b)
@@ -643,6 +725,7 @@ void MainWindow::slot_RestoreDatabase(bool b)
         Q_UNUSED(b);
         dbManager->restore();
 }
+
 void MainWindow::slot_ShowSettings(bool b)
 {
     Q_UNUSED(b);
@@ -704,3 +787,48 @@ void MainWindow::slot_startApplication()
   dialogStart->show();
 }
 
+void MainWindow::slot_TableClicked(const QModelIndex &modelIndex)
+{
+
+  if(modelIndex.row() == 0 && bool_PrintProject)
+  {
+    bool_PrintProject = false;
+    showTable_Rustplan();
+    return;
+  }
+
+  if(modelIndex.row() == 0 && !bool_PrintProject)
+  {
+    bool_PrintProject = true;
+    showTable_Rustplan();
+    return;
+  }
+
+  if(list_ToolDescription[modelIndex.row()].contains("EINLAGERN") && bool_PrintIn)
+  {
+    bool_PrintIn = false;
+    showTable_Rustplan();
+    return;
+  }
+
+  if(list_ToolDescription[modelIndex.row()].contains("EINLAGERN") && !bool_PrintIn)
+  {
+    bool_PrintIn = true;
+    showTable_Rustplan();
+    return;
+  }
+
+  if(list_ToolDescription[modelIndex.row()].contains("AUSLAGERN") && bool_PrintOut)
+  {
+    bool_PrintOut = false;
+    showTable_Rustplan();
+    return;
+  }
+
+  if(list_ToolDescription[modelIndex.row()].contains("AUSLAGERN") && !bool_PrintOut)
+  {
+    bool_PrintOut = true;
+    showTable_Rustplan();
+    return;
+  }
+}

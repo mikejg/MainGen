@@ -136,6 +136,25 @@
           </property>
          </spacer>
         </item>
+        <item>
+         <widget class="QLabel" name="label_RohteilKontrolle">
+          <property name="text">
+           <string>Rohteilkontrolle00</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="toolButton_Rohteilkontrolle">
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normalon>:/Icons/more.png</normalon>
+           </iconset>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
      </layout>
@@ -287,6 +306,9 @@
      </item>
      <item>
       <widget class="QLineEdit" name="lineEdit_NP">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="maximumSize">
         <size>
          <width>75</width>

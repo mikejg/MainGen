@@ -9,8 +9,15 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    TouchProbe/touchprobe.cpp \
+    TouchProbe/tp_scrollcontent.cpp \
+    TouchProbe/tp_base.cpp \
+    TouchProbe/tp_item.cpp \
+    TouchProbe/tp_kante.cpp \
+    TouchProbe/tp_steg.cpp \
     c_algin.cpp \
     dialogProgress.cpp \
+    dialogrohteilkontrolle.cpp \
     magazin.cpp \
     magazinmodel.cpp \
     main.cpp \
@@ -33,8 +40,15 @@ SOURCES += \
     license.cpp
 
 HEADERS += \
+    TouchProbe/touchprobe.h \
+    TouchProbe/tp_scrollcontent.h \
+    TouchProbe/tp_base.h \
+    TouchProbe/tp_item.h \
+    TouchProbe/tp_kante.h \
+    TouchProbe/tp_steg.h \
     c_algin.h \
     dialogProgress.h \
+    dialogrohteilkontrolle.h \
     magazin.h \
     magazinmodel.h \
     mainwindow.h \
@@ -56,8 +70,15 @@ HEADERS += \
     license.h
 
 FORMS += \
+    TouchProbe/touchprobe.ui \
+    TouchProbe/tp_scrollcontent.ui \
+    TouchProbe/tp_base.ui \
+    TouchProbe/tp_item.ui \
+    TouchProbe/tp_kante.ui \
+    TouchProbe/tp_steg.ui \
     c_algin.ui \
     dialogProgress.ui \
+    dialogrohteilkontrolle.ui \
     magazin.ui \
     mainwindow.ui \
     dialogrepetition.ui \
@@ -71,3 +92,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     Icons.qrc
+
+#DISTFILES += \
+#    Icons/Rohteilkontrolle/RohteilKontrolle00_192.png

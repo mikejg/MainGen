@@ -7,8 +7,9 @@ C_Algin::C_Algin(QWidget *parent) :
     ui(new Ui::C_Algin)
 {
     ui->setupUi(this);
-    ui->spinBox_L2->installEventFilter(this);
+    ui->lineEdit_L2->installEventFilter(this);
     ui->textEdit->hide();
+
     stringList_Frames << "Oben" << "Hinten" << "Links" << "Vorne" << "Rechts";
     stringList_MessRichtung1 << "+" << "-";
     stringList_MessRichtung2 << "X" << "Y" << "Z";
@@ -19,6 +20,12 @@ C_Algin::C_Algin(QWidget *parent) :
     ui->comboBox_Frame->setCurrentIndex(1);
     ui->comboBox_Messrichtung1->setCurrentIndex(1);
     ui->comboBox_Messrichtung2->setCurrentIndex(2);
+    ui->comboBox_Messrichtung2->setEditable(true);
+    ui->comboBox_Messrichtung2->lineEdit()->setReadOnly(true);
+    ui->comboBox_Messrichtung2->lineEdit()->setAlignment(Qt::AlignCenter);
+    for (int i = 0 ; i < ui->comboBox_Messrichtung2->count() ; ++i) {
+        ui->comboBox_Messrichtung2->setItemData(i, Qt::AlignCenter, Qt::TextAlignmentRole);
+    }
     ui->lineEdit_Positionierachse->setText("X");
     ui->comboBox_Messrichtung1->setEnabled(false);
     ui->comboBox_Messrichtung2->setEnabled(false);
@@ -34,6 +41,15 @@ C_Algin::C_Algin(QWidget *parent) :
     connect(ui->comboBox_Messrichtung2, SIGNAL(currentTextChanged(QString)), this, SLOT(slot_currentTextChanged(QString)));
     connect(ui->toolButton_Edit, SIGNAL(released()), this, SLOT(slot_create()));
     connect(ui->toolButton_Pix, SIGNAL(released()), this, SLOT(slot_pix()));
+    connect(ui->toolButton_Export, SIGNAL(released()), this, SLOT(slot_export()));
+
+    mfile->setFileName(QDir::homePath() + "/MainGen/Vorlagen/C_Algin/Anfahren.txt");
+    mfile->read_Content();
+    stringList_ContentAnfahren = mfile->get_Content();
+    foreach(QString str, stringList_ContentAnfahren)
+    {
+        ui->textEdit_Anfahren->append(str);
+    }
 }
 
 C_Algin::~C_Algin()
@@ -45,12 +61,12 @@ bool C_Algin::eventFilter(QObject *object, QEvent *event)
 {
     if (event->type() == QEvent::FocusIn)
     {
-        if (object == ui->spinBox_L2 && ui->comboBox_Frame->currentIndex() != 0)
+        if (object == ui->lineEdit_L2 && ui->comboBox_Frame->currentIndex() != 0)
         {
             ui->label_Pix->setPixmap(QPixmap(":/Icons/CAlgin/C_Algin_ZMinus2.png"));
         }
 
-        if (object == ui->spinBox_L2 &&
+        if (object == ui->lineEdit_L2 &&
             ui->comboBox_Frame->currentText() == "Oben" &&
             ui->comboBox_Messrichtung1->currentText() == "+" &&
             ui->comboBox_Messrichtung2->currentText() == "X")
@@ -58,7 +74,7 @@ bool C_Algin::eventFilter(QObject *object, QEvent *event)
             ui->label_Pix->setPixmap(QPixmap(":/Icons/CAlgin/C_Algin_XPlus2.png"));
         }
 
-        if (object == ui->spinBox_L2 &&
+        if (object == ui->lineEdit_L2 &&
             ui->comboBox_Frame->currentText() == "Oben" &&
             ui->comboBox_Messrichtung1->currentText() == "-" &&
             ui->comboBox_Messrichtung2->currentText() == "X")
@@ -66,7 +82,7 @@ bool C_Algin::eventFilter(QObject *object, QEvent *event)
             ui->label_Pix->setPixmap(QPixmap(":/Icons/CAlgin/C_Algin_XMinus2.png"));
         }
 
-        if (object == ui->spinBox_L2 &&
+        if (object == ui->lineEdit_L2 &&
             ui->comboBox_Frame->currentText() == "Oben" &&
             ui->comboBox_Messrichtung1->currentText() == "+" &&
             ui->comboBox_Messrichtung2->currentText() == "Y")
@@ -74,7 +90,7 @@ bool C_Algin::eventFilter(QObject *object, QEvent *event)
             ui->label_Pix->setPixmap(QPixmap(":/Icons/CAlgin/C_Algin_YPlus2.png"));
         }
 
-        if (object == ui->spinBox_L2 &&
+        if (object == ui->lineEdit_L2 &&
             ui->comboBox_Frame->currentText() == "Oben" &&
             ui->comboBox_Messrichtung1->currentText() == "-" &&
             ui->comboBox_Messrichtung2->currentText() == "Y")
@@ -85,12 +101,12 @@ bool C_Algin::eventFilter(QObject *object, QEvent *event)
 
     if (event->type() == QEvent::FocusOut)
     {
-        if (object == ui->spinBox_L2 && ui->comboBox_Frame->currentIndex() != 0)
+        if (object == ui->lineEdit_L2 && ui->comboBox_Frame->currentIndex() != 0)
         {
             ui->label_Pix->setPixmap(QPixmap(":/Icons/CAlgin/C_Algin_ZMinus1.png"));
         }
 
-        if (object == ui->spinBox_L2 &&
+        if (object == ui->lineEdit_L2 &&
             ui->comboBox_Frame->currentText() == "Oben" &&
             ui->comboBox_Messrichtung1->currentText() == "+" &&
             ui->comboBox_Messrichtung2->currentText() == "X")
@@ -98,7 +114,7 @@ bool C_Algin::eventFilter(QObject *object, QEvent *event)
             ui->label_Pix->setPixmap(QPixmap(":/Icons/CAlgin/C_Algin_XPlus1.png"));
         }
 
-        if (object == ui->spinBox_L2 &&
+        if (object == ui->lineEdit_L2 &&
             ui->comboBox_Frame->currentText() == "Oben" &&
             ui->comboBox_Messrichtung1->currentText() == "-" &&
             ui->comboBox_Messrichtung2->currentText() == "X")
@@ -106,7 +122,7 @@ bool C_Algin::eventFilter(QObject *object, QEvent *event)
             ui->label_Pix->setPixmap(QPixmap(":/Icons/CAlgin/C_Algin_XMinus1.png"));
         }
 
-        if (object == ui->spinBox_L2 &&
+        if (object == ui->lineEdit_L2 &&
             ui->comboBox_Frame->currentText() == "Oben" &&
             ui->comboBox_Messrichtung1->currentText() == "+" &&
             ui->comboBox_Messrichtung2->currentText() == "Y")
@@ -114,7 +130,7 @@ bool C_Algin::eventFilter(QObject *object, QEvent *event)
             ui->label_Pix->setPixmap(QPixmap(":/Icons/CAlgin/C_Algin_YPlus1.png"));
         }
 
-        if (object == ui->spinBox_L2 &&
+        if (object == ui->lineEdit_L2 &&
             ui->comboBox_Frame->currentText() == "Oben" &&
             ui->comboBox_Messrichtung1->currentText() == "-" &&
             ui->comboBox_Messrichtung2->currentText() == "Y")
@@ -126,17 +142,19 @@ bool C_Algin::eventFilter(QObject *object, QEvent *event)
     return false;
 }
 
+/*
 void C_Algin::set_Oben()
 {
 
 }
-
+*/
 void C_Algin::slot_currentFrameChanged(QString str)
 {
     if(str == "Oben")
     {
         ui->comboBox_Messrichtung1->setEnabled(true);
         ui->comboBox_Messrichtung2->setEnabled(true);
+        ui->label_Messrichtung->setEnabled(true);
         ui->label_Pix->setPixmap(QPixmap(":/Icons/CAlgin/C_Algin_XPlus1.png"));
         ui->comboBox_Messrichtung1->setCurrentIndex(0);
         ui->comboBox_Messrichtung2->setCurrentIndex(0);
@@ -152,6 +170,7 @@ void C_Algin::slot_currentFrameChanged(QString str)
         ui->lineEdit_Positionierachse->setText("X");
         ui->comboBox_Messrichtung1->setEnabled(false);
         ui->comboBox_Messrichtung2->setEnabled(false);
+        ui->label_Messrichtung->setEnabled(false);
     }
 }
 
@@ -205,19 +224,17 @@ void C_Algin::SetComboBoxItemEnabled(QComboBox * comboBox, int index, bool enabl
 
 void C_Algin::slot_create()
 {
-    QString str;
-    double double_Temp;
+    //Lese stringList_Content aus dem kleinen textEdit_Anfahren
+    stringList_ContentAnfahren = ui->textEdit_Anfahren->toPlainText().split("\n");
 
+    //Loesche alles im Editor und schalte auf den Editor um
     ui->textEdit->clear();
     ui->label_Pix->hide();
     ui->textEdit->show();
 
-    //Kommas in Punkt umwandeln
-    ui->lineEdit_X->setText(replace_Comma(ui->lineEdit_X->text()));
-    ui->lineEdit_Y->setText(replace_Comma(ui->lineEdit_Y->text()));
-    ui->lineEdit_Z->setText(replace_Comma(ui->lineEdit_Z->text()));
+    //Ausrichtzyklus wir fürs geschwenkte Antasten vorbereitet
+    string_CYCLE998 = "CYCLE998(100105,9000,6,1,1,0,,10,$TSA$,103,2,$Lange$,,,,,1,0,1,)";
 
-    string_CYCLE998 = "CYCLE998(100105,9000,6,1,1,0,,10,0.2,103,2,$Lange$,,,,,1,0,1,)";
     //A und C Achsen definieren
     switch (ui->comboBox_Frame->currentIndex())
     {
@@ -225,48 +242,106 @@ void C_Algin::slot_create()
         case 0:
            int_AAxis = 0;
            int_CAxis = 0;
-           int_ZOffset = -10;
            break;
 
         //Hinten
         case 1:
            int_AAxis = -90;
            int_CAxis = 0;
-           int_ZOffset = 10;
            break;
 
         //Links
         case 2:
            int_AAxis = -90;
            int_CAxis = 90;
-           int_ZOffset = 10;
            break;
 
         //Vorne
         case 3:
            int_AAxis = -90;
            int_CAxis = 180;
-           int_ZOffset = 10;
            break;
 
         //Rechts
         case 4:
            int_AAxis = -90;
            int_CAxis = -90;
-           int_ZOffset = 10;
            break;
     }
 
+    //Zaehler auf 0 setzen
     counter = 0;
+
+    //Kopf für das Schwenkprogramm laden und in den Editor
+    //mittels der Funktion insert_Content einfürgen
     mfile->setFileName(QDir::homePath() + "/MainGen/Vorlagen/C_Algin/Header.txt");
     mfile->read_Content();
     stringList_Content = mfile->get_Content();
     insert_Content();
 
+    //Body für das Schwenkprogramm laden und in den Editor
+    //mittels der Funktion insert_Content einfürgen
     mfile->setFileName(QDir::homePath() + "/MainGen/Vorlagen/C_Algin/Body.txt");
     mfile->read_Content();
     stringList_Content = mfile->get_Content();
     insert_Content();
+
+
+}
+
+void C_Algin::slot_export()
+{
+    QString str;
+    QDir dir;
+    //qDebug() << project->get_ProgrammDir() << "/" << project->get_ProjectName() << "/" << project->get_ProjectFullName();
+    //Allei Einstellungen übernehmen und das Programm im Editor neu erstellen
+    slot_create();
+
+    // Wenn es ProjecName oder ProjectFullName leer sind wird nur in das Programmverzeichnis geschrieben
+    // Programme\_C_Ausrichten.SPF
+    if(project->get_ProjectName().isEmpty() || project->get_ProjectFullName().isEmpty())
+    {
+           str = project->get_ProgrammDir() + "/_C_Ausrichten.SPF";
+    }
+
+    // Ansonsten wird in die Datei
+    // Programme\E12345678.WPD\E12345678_E01_Sp2.WPD\_C_Ausrichten.SPF
+    // geschrieben
+    else
+    {
+        str = project->get_ProgrammDir() + "/"
+            + project->get_ProjectName() + ".WPD/"
+            + project->get_ProjectFullName() + ".WPD/_C_Ausrichten.SPF";
+
+        // Wenn es das Verzeichnis
+        // Programme\E12345678.WPD\E12345678_E01_Sp2.WPD
+        // noch nicht gibt dann erstelle es
+        dir.setPath(project->get_ProgrammDir() + "/"
+                  + project->get_ProjectName() + ".WPD/"
+                  + project->get_ProjectFullName() + ".WPD");
+
+        if(!dir.exists())
+        {
+            dir.mkpath(project->get_ProgrammDir() + "/"
+                       + project->get_ProjectName() + ".WPD/"
+                       + project->get_ProjectFullName() + ".WPD");
+        }
+    }
+
+    QFile file(str);
+
+    if(file.open(QFile::WriteOnly))
+    {
+        //qDebug() << "File is open";
+        //Oeffne stream und schreib jede Zeile aus textEdit in den Stream
+        QTextStream stream(&file);
+        foreach(QString string_Line, ui->textEdit->toPlainText().split("\n"))
+        {
+            qDebug() << string_Line;
+            stream << string_Line << "\n";
+        }
+        file.close();
+    }
 }
 
 void C_Algin::slot_pix()
@@ -277,71 +352,41 @@ void C_Algin::slot_pix()
 
 void C_Algin::insert_Content()
 {
-    QString string_Replace;
-    QString string_ReplaceX;
-    QString string_ReplaceY;
-    double double_Temp;
-
-    //Werte aus LineEdit auslesen
-    string_ReplaceX = ui->lineEdit_X->text();
-    string_ReplaceY = ui->lineEdit_Y->text();
-
     // Wenn Oben, X, +
     // setzte CYCL998
-    // Gehe in X 10 mm ins Minus
     if(ui->comboBox_Messrichtung1->currentIndex() == 0 &&
        ui->comboBox_Messrichtung2->currentIndex() == 0 &&
        ui->comboBox_Frame->currentIndex() == 0)
     {
-           string_CYCLE998 = "CYCLE998(100105,9000,6,1,1,0,,10,0.2,201,1,$Lange$,,,,,1,0,1,)";
-           double_Temp = ui->lineEdit_X->text().toDouble();
-           double_Temp -= 10;
-           string_ReplaceX = QString("%1").arg(double_Temp);
+           string_CYCLE998 = "CYCLE998(100105,9000,6,1,1,0,,10,$TSA$,201,1,$Lange$,,,,,1,0,1,)";
     }
 
     // Wenn Oben, X, -
     // setzte CYCL998
-    // Gehe in X 10 mm ins Plus
     if(ui->comboBox_Messrichtung1->currentIndex() == 1 &&
         ui->comboBox_Messrichtung2->currentIndex() == 0 &&
         ui->comboBox_Frame->currentIndex() == 0)
     {
-           string_CYCLE998 = "CYCLE998(100105,9000,6,1,1,0,,10,0.2,201,2,$Lange$,,,,,1,0,1,)";
-           double_Temp = ui->lineEdit_X->text().toDouble();
-           double_Temp += 10;
-           string_ReplaceX = QString("%1").arg(double_Temp);
+           string_CYCLE998 = "CYCLE998(100105,9000,6,1,1,0,,10,$TSA$,201,2,$Lange$,,,,,1,0,1,)";
     }
 
     // Wenn Oben, Y, +
     // setzte CYCL998
-    // Gehe in Y 10 mm ins Minus
     if(ui->comboBox_Messrichtung1->currentIndex() == 0 &&
         ui->comboBox_Messrichtung2->currentIndex() == 1 &&
         ui->comboBox_Frame->currentIndex() == 0)
     {
-           string_CYCLE998 = "CYCLE998(100105,9000,6,1,1,0,,10,0.2,102,1,$Lange$,,,,,1,0,1,)";
-           double_Temp = ui->lineEdit_Y->text().toDouble();
-           double_Temp -= 10;
-           string_ReplaceY = QString("%1").arg(double_Temp);
+           string_CYCLE998 = "CYCLE998(100105,9000,6,1,1,0,,10,$TSA$,102,1,$Lange$,,,,,1,0,1,)";
     }
 
     // Wenn Oben, Y, -
     // setzte CYCL998
-    // Gehe in Y 10 mm ins Minus
     if(ui->comboBox_Messrichtung1->currentIndex() == 1 &&
         ui->comboBox_Messrichtung2->currentIndex() == 1 &&
         ui->comboBox_Frame->currentIndex() == 0)
     {
-           string_CYCLE998 = "CYCLE998(100105,9000,6,1,1,0,,10,0.2,102,2,$Lange$,,,,,1,0,1,)";
-           double_Temp = ui->lineEdit_Y->text().toDouble();
-           double_Temp += 10;
-           string_ReplaceY = QString("%1").arg(double_Temp);
+           string_CYCLE998 = "CYCLE998(100105,9000,6,1,1,0,,10,$TSA$,102,2,$Lange$,,,,,1,0,1,)";
     }
-
-    if(int_ZOffset >= 0)
-           string_Replace = QString("+%1").arg(int_ZOffset);
-    else
-           string_Replace = QString("%1").arg(int_ZOffset);
 
 
     foreach (QString str, stringList_Content)
@@ -353,17 +398,28 @@ void C_Algin::insert_Content()
        //Header
        str = str.replace("$A$", QString("%1").arg(int_AAxis));
        str = str.replace("$C$", QString("%1").arg(int_CAxis));
+       str = str.replace("$G5x$",  project->get_ProjectZeroPoint());
 
        //Body
-       str = str.replace("$X$", string_ReplaceX);
-       str = str.replace("$Y$", string_ReplaceY);
-       str = str.replace("$Z$", ui->lineEdit_Z->text());
-       str = str.replace("$ZO$", string_Replace);
        str = str.replace("$CYCLE998$", string_CYCLE998);
-       str = str.replace("$Lange$", QString("%1").arg(ui->spinBox_L2->value()));
+       str = str.replace("$Lange$", replace_Comma(ui->lineEdit_L2->text()));
+       str = str.replace("$TSA$", replace_Comma(ui->lineEdit_TSA->text()));
+       if(str.contains("$Anfahren$"))
+       {
+         foreach (QString str_Anfahren, stringList_ContentAnfahren)
+         {
+             str_Anfahren = QString("N%1 ").arg(counter) + str_Anfahren;
+             ui->textEdit->append(str_Anfahren);
+             counter++;
+         }
+         counter--;
+       }
+       else
+       {
+        str = QString("N%1 ").arg(counter) + str;
+        ui->textEdit->append(str);
+       }
 
-       str = QString("N%1 ").arg(counter) + str;
-       ui->textEdit->append(str);
     }
 }
 
@@ -371,5 +427,10 @@ QString C_Algin::replace_Comma(QString str)
 {
     QString returnString;
     returnString = str.replace(",",".");
+    while(returnString.endsWith("0") && returnString.contains("."))
+    {
+       returnString = returnString.left(returnString.length()-1);
+       qDebug() << returnString;
+    }
     return returnString;
 }

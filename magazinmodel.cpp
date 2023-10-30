@@ -12,7 +12,8 @@ void MagazinModel::populateData(const QList<QString> &id,
                               const QList<QString> &tgl,
                               const QList<QString> &tal,
                               const QList<QString> &tfl,
-                              const QList<QString> &status)
+                              const QList<QString> &status,
+                              const QList<QString> &tsl  )
 {
     list_ID.clear();
     list_ID = id;
@@ -26,6 +27,8 @@ void MagazinModel::populateData(const QList<QString> &id,
     list_TFL = tfl;
     list_Status.clear();
     list_Status = status;
+    list_TSL.clear();
+    list_TSL = tsl;
     return;
 }
 
@@ -38,7 +41,7 @@ int MagazinModel::rowCount(const QModelIndex &parent) const
 int MagazinModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return 6;
+    return 7;
 }
 
 QVariant MagazinModel::data(const QModelIndex &index, int role) const
@@ -54,7 +57,8 @@ QVariant MagazinModel::data(const QModelIndex &index, int role) const
         if(col == 2) return list_TGL[row];
         if(col == 3) return list_TAL[row];
         if(col == 4) return list_TFL[row];
-        if(col == 5) return list_Description[row];
+        if(col == 5) return list_TSL[row];
+        if(col == 6) return list_Description[row];
 
     case Qt::TextAlignmentRole:
         if(col == 0) return Qt::AlignCenter;
@@ -92,6 +96,10 @@ QVariant MagazinModel::headerData(int section, Qt::Orientation orientation, int 
             return QString("FL");
         }
         else if (section == 5)
+        {
+            return QString("SL");
+        }
+        else if (section == 6)
         {
             return QString("Beschreibung");
         }

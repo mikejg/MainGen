@@ -9,8 +9,14 @@ Project::Project(QObject *parent)
     connect(parser_Programm,  SIGNAL(sig_Log(QString)), this, SIGNAL(sig_Log(QString)));
 
     toolList = new ToolList(this);
+    string_ProjectZeroPoint = "G___";
+    string_RohteilKontrolle = "Rohteilkontrolle00";
 }
 
+void Project::clear()
+{
+
+}
 void Project::frame_Error(QStringList stringList_Errors)
 {
     /* Zieht einen ASCII Rahmen um die Fehlermeldungen */
@@ -168,6 +174,7 @@ void Project::logProjectData()
     emit sig_Log("ProjectClamping: " + string_ProjectClamping);
     emit sig_Log("Hauptprogramm :  " + string_MainProgramm);
     emit sig_Log("Material         " + string_Material);
+    emit sig_Log("Nullpunkt:       " + string_ProjectZeroPoint);
     emit sig_Log("Rohteil:         " + string_RTx + " x " + string_RTy + " x " + string_RTz);
     emit sig_Log("Bauteil:         " + string_BTx + " x " + string_BTy + " x " + string_BTz);
     emit sig_Log("AntastPunkt Z    " + string_ZRT);

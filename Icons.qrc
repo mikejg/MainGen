@@ -26,5 +26,22 @@
         <file>Icons/CAlgin/C_Algin_YPlus2.png</file>
         <file>Icons/CAlgin/create.png</file>
         <file>Icons/CAlgin/Picture.png</file>
+        <file>Icons/more.png</file>
+        <file>Icons/Rohteilkontrolle/RohteilKontrolle00_192.png</file>
+        <file>Icons/Rohteilkontrolle/RohteilKontrolle01_192.png</file>
+        <file>Icons/Rohteilkontrolle/RohteilKontrolle02_192.PNG</file>
+        <file>Icons/TouchProbe/add.png</file>
+        <file>Icons/TouchProbe/Ausrichten.png</file>
+        <file>Icons/TouchProbe/delete.png</file>
+        <file>Icons/TouchProbe/down-arrow.png</file>
+        <file>Icons/TouchProbe/empty-set.png</file>
+        <file>Icons/TouchProbe/Kante.png</file>
+        <file>Icons/TouchProbe/Steg.png</file>
+        <file>Icons/TouchProbe/X_Plus1.png</file>
+        <file>Icons/TouchProbe/X_Minus1.png</file>
+        <file>Icons/TouchProbe/Y_Minus1.png</file>
+        <file>Icons/TouchProbe/Y_Plus1.png</file>
+        <file>Icons/TouchProbe/Z_Minus1.png</file>
+        <file>Icons/TouchProbe/X_Plus2.png</file>
     </qresource>
 </RCC>

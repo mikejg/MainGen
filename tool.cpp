@@ -11,6 +11,7 @@ Tool::Tool(QObject *parent)
     freistellLaenge = " ";
     halterComment   = " ";
     halterName      = " ";
+    schneidLange    = " ";
     state           = Out;
 }
 
@@ -23,7 +24,7 @@ void Tool::clear()
     freistellLaenge = " ";
     halterComment   = " ";
     halterName      = " ";
-
+    schneidLange    = " ";
     counter = 0;
 }
 

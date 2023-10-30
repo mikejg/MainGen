@@ -23,7 +23,7 @@ private:
     QString string_ProjectClamping;
     QString string_ProjectZeroPoint;
     QString string_MainProgramm;
-
+    QString string_RohteilKontrolle;
     QString string_Material;
 
     QString string_RTx, string_RTy, string_RTz;
@@ -85,6 +85,7 @@ public:
     QString     get_ProjectStatus()              {return string_ProjectStatus;}
     QString     get_ProjectZeroPoint()           {return string_ProjectZeroPoint;}
     int         get_RepetitiveManufacturing()    {return int_RepetitiveManufacturing;}
+    QString     get_RohteilKontrolle()           {return string_RohteilKontrolle;}
 
     ToolList* get_ToolList()       {return toolList;}
     ToolList* get_ToolList_IN()    {return toolList_IN;}
@@ -120,6 +121,7 @@ public:
     void set_ProjectStatus(QString str)    {string_ProjectStatus = str;}
     void set_ProjectZeroPoint(QString str) {string_ProjectZeroPoint = str;}
     void set_RepetitiveManufacturing();
+    void set_RohteilKontrolle(QString str)  {string_RohteilKontrolle = str;}
 
     void set_ToolList_IN(ToolList* tl) {toolList_IN = tl;}
     void frame_Error(QStringList);
@@ -132,6 +134,7 @@ public:
     void set_DBManager(DBManager* dbm);
     void set_Settings(Settings* s);
     bool sort_Programms();
+    void clear();
 
 signals:
     void sig_Err(QString);

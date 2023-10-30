@@ -14,9 +14,17 @@ Magazin::Magazin(QWidget *parent) :
     connect(mfile, SIGNAL(sig_Err(QString)), this, SIGNAL(sig_Err(QString)));
 
     connect(ui->lineEdit, SIGNAL(textEdited(QString)), this, SLOT(slot_textEdited(QString)));
+    connect(ui->tableView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(slot_TableClicked(const QModelIndex &)));
+
     toolList = new ToolList(this);
     searchList = new ToolList(this);
     sizeIn = 0;
+
+    QPalette palette;
+    palette.setColor(QPalette::Highlight, ui->tableView->palette().color(QPalette::Base));
+    palette.setColor(QPalette::HighlightedText, ui->tableView->palette().color(QPalette::Text));
+
+    ui->tableView->setPalette(palette);
 }
 
 Magazin::~Magazin()
@@ -33,6 +41,10 @@ bool Magazin::contains(Tool* tool)
         {
             return true;
         }
+
+        if(toolList_Tool->get_Number().contains(tool->get_Number()) &&
+            toolList_Tool->get_State() == Tool::Disassembled)
+            tool->set_State(Tool::Disassembled);
     }
 
     return false;
@@ -111,7 +123,7 @@ bool Magazin::create_ToolList()
             if(string_ToolID.contains("_"))
             {
                 stringList_ToolData = dbManager->getToolData(string_ToolID);
-                if(stringList_ToolData.size() < 4)
+                if(stringList_ToolData.size() < 5)
                 {
                     sig_Err("Unvollstandige Tooldaten: " + string_ToolID);
                     continue;
@@ -136,6 +148,11 @@ bool Magazin::create_ToolList()
                     string_Temp = string_Temp.left(7);
                 tool->set_ToolGL(string_Temp);
 
+                string_Temp = stringList_ToolData.at(4);
+                if(string_Temp.length() > 7)
+                    string_Temp = string_Temp.left(7);
+                tool->set_SchneidLange(string_Temp);
+
                 if(bool_X)
                     string_ToolID += "_X";
                 tool->set_Number(string_ToolID);
@@ -145,6 +162,17 @@ bool Magazin::create_ToolList()
         }
     }
 
+    foreach (tool, toolList->getList())
+    {
+        tool->set_counter(dbManager->getCounter(tool->get_Number()));
+    }
+
+    /*
+    foreach (tool, toolList->getList())
+    {
+        qDebug() << tool->get_Number() << ": " << tool->get_counter();
+    }
+    */
     showToolList(toolList);
     return true;
 }
@@ -158,6 +186,8 @@ void Magazin::showToolList(ToolList* list)
     list_ToolAL.clear();
     list_ToolFL.clear();
     list_ToolState.clear();
+    list_ToolSL.clear();
+
     //Füge die Werkzeuge ein
     foreach(Tool* tool, list->getList())
     {
@@ -167,6 +197,7 @@ void Magazin::showToolList(ToolList* list)
         list_ToolAL.append(tool->get_ToolAL());
         list_ToolFL.append(tool->get_ToolFL());
         list_ToolState.append(tool->get_StateString());
+        list_ToolSL.append(tool->get_SchneidLange());
     }
 
     tableModel = new MagazinModel(this);
@@ -177,9 +208,38 @@ void Magazin::showToolList(ToolList* list)
                              list_ToolGL,
                              list_ToolAL,
                              list_ToolFL,
-                             list_ToolState);
+                             list_ToolState,
+                             list_ToolSL);
 
     ui->tableView->setModel(tableModel);
+
+}
+
+void Magazin::slot_TableClicked(const QModelIndex &modelIndex)
+{
+    QPalette palette;
+
+    if(list_ToolState[modelIndex.row()] == "In")
+    {
+        palette.setColor(QPalette::Highlight, ui->tableView->palette().color(QPalette::Base));
+        palette.setColor(QPalette::HighlightedText, Qt::green);
+    }
+    else if(list_ToolState[modelIndex.row()] == "Out")
+    {
+        palette.setColor(QPalette::Highlight, ui->tableView->palette().color(QPalette::Base));
+        palette.setColor(QPalette::HighlightedText, Qt::yellow);
+    }
+    else if(list_ToolState[modelIndex.row()] == "Disassembled")
+    {
+        palette.setColor(QPalette::Highlight, ui->tableView->palette().color(QPalette::Base));
+        palette.setColor(QPalette::HighlightedText, Qt::red);
+    }
+    else
+    {
+        palette.setColor(QPalette::Highlight, ui->tableView->palette().color(QPalette::Base));
+        palette.setColor(QPalette::HighlightedText, ui->tableView->palette().color(QPalette::Text));
+    }
+    ui->tableView->setPalette(palette);
 }
 
 void Magazin::slot_textEdited(QString str)

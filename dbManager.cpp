@@ -133,7 +133,7 @@ QStringList DBManager::getToolData(QString toolID)
                     "gage_length, "
                     "tool_length,"
                     "nc_name, "
-                    "Tools.dbl_param5, Tools.bool_param2 "
+                    "Tools.dbl_param5, Tools.bool_param2, Tools.dbl_param1 "
                     "FROM NCTools "
                     "INNER JOIN Tools on "
                     "Tools.id = NCTools.tool_id "
@@ -154,6 +154,8 @@ QStringList DBManager::getToolData(QString toolID)
         bool_Hals = true;
 
         returnList.append(query.value("nc_name").toString());
+        returnList.append(query.value("dbl_param1").toString());
+
         //qDebug() << returnList.size();
     }
 

@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>729</width>
-    <height>544</height>
+    <width>800</width>
+    <height>900</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>900</height>
+   </size>
   </property>
   <property name="maximumSize">
    <size>
@@ -20,11 +26,11 @@
    <string>MainGen</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_3">
+   <layout class="QVBoxLayout" name="verticalLayout_7">
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tab_Editor">
        <property name="minimumSize">
@@ -74,11 +80,17 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_6"/>
       </widget>
+      <widget class="TouchProbe" name="tab_TouchProbe">
+       <attribute name="title">
+        <string>Antasten</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout"/>
+      </widget>
       <widget class="QWidget" name="tab_Log">
        <attribute name="title">
         <string>Logfile</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <widget class="QTextEdit" name="textEdit_Log">
           <property name="font">
@@ -99,7 +111,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>729</width>
+     <width>800</width>
      <height>21</height>
     </rect>
    </property>
@@ -183,6 +195,12 @@
    <class>Magazin</class>
    <extends>QWidget</extends>
    <header location="global">magazin.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TouchProbe</class>
+   <extends>QWidget</extends>
+   <header>TouchProbe/touchprobe.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

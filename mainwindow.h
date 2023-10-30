@@ -57,10 +57,14 @@ private:
     QList<QString>      list_ToolGL;
     QList<QString>      list_ToolAL;
     QList<QString>      list_ToolFL;
+    QList<QString>      list_Counter;
     Magazin*            magazin;
     MFile*              mfile;
     Parser_PlaceHolder* parser_PlaceHolder;
     Parser_Programm*    parser_Programm;
+    bool                bool_PrintProject;
+    bool                bool_PrintIn;
+    bool                bool_PrintOut;
     Project_Loader*     project_Loader;
     Project_Saver*      project_Saver;
     Project*            project;
@@ -76,7 +80,7 @@ private:
     bool copyWerkzeugDB();
     bool load_Programme();
     void FileNameMax(QStringList);
-    void showTable_Rustplan();
+    void showTable_Rustplan(bool bool_Print=false);
     //void showTable_Top100();
 
 
@@ -92,6 +96,7 @@ public slots:
 
     void slot_AddFile(bool);
     void slot_dialogStart_Closed();
+    void slot_dialogPrint_Finished(int);
     void slot_Err(QString);
     void slot_Export(bool b);
     void slot_FinishFile(bool b);
@@ -104,7 +109,7 @@ public slots:
     void slot_RestoreDatabase(bool);
     void slot_ShowSettings(bool);
     void slot_startApplication();
-
+    void slot_TableClicked(const QModelIndex &);
 
 };
 #endif // MAINWINDOW_H

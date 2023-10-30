@@ -103,6 +103,7 @@ QStringList Parser_PlaceHolder::set_PlaceHolder_MainProgramm(QStringList stringL
         string_Line = string_Line.replace("$G5x$",  project->get_ProjectZeroPoint());
         string_Line = string_Line.replace("$ZRT$",  project->get_ZRohteil());
         string_Line = string_Line.replace("$Ma$",   project->get_Material());
+        string_Line = string_Line.replace("$RTK$",  project->get_RohteilKontrolle());
 
         /* Wenn die Zeile $G55$ enthält wird der Inhalt der Datei
          * "/MainGen/config/G55.txt" ausgegeben.

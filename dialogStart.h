@@ -3,6 +3,7 @@
 
 #include "mfile.h"
 #include "project.h"
+#include "dialogrohteilkontrolle.h"
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -28,6 +29,8 @@ class DialogStart : public QDialog
 private:
     Ui::DialogStart *ui;
     //bool firstStart = true;
+
+    DialogRohteilkontrolle* dialogRohteilkontrolle;
 
     Project* project;
     MFile*   mfile_ZeroPoint;
@@ -95,6 +98,9 @@ public slots:
     void slot_checkBox_RT_AufmassEinzel_stateChanged(int);
     void slot_checkBox_FT_AufmassEinzel_stateChanged(int);
     void slot_comboBox_NP_indexChanged(int);
+    void slot_Rejected();
+    void slot_ShowRohteilkontrolle();
+    void slot_New_RohteilKontrolle(QString);
 };
 
 

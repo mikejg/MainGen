@@ -9,7 +9,8 @@ void TableModel::populateData(const QList<QString> &id,
                               const QList<QString> &description,
                               const QList<QString> &tgl,
                               const QList<QString> &tal,
-                              const QList<QString> &tfl)
+                              const QList<QString> &tfl,
+                              const QList<QString> &tcounter)
 {
     list_ID.clear();
     list_ID = id;
@@ -21,6 +22,8 @@ void TableModel::populateData(const QList<QString> &id,
     list_TAL = tal;
     list_TFL.clear();
     list_TFL = tfl;
+    list_Counter.clear();
+    list_Counter = tcounter;
 
     return;
 }
@@ -34,7 +37,7 @@ int TableModel::rowCount(const QModelIndex &parent) const
 int TableModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return 5;
+    return 6;
 }
 
 QVariant TableModel::data(const QModelIndex &index, int role) const
@@ -45,11 +48,12 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
     switch (role)
     {
         case Qt::DisplayRole:
-            if(col == 0) return list_ID[row];
-            if(col == 1) return list_TGL[row];
-            if(col == 2) return list_TAL[row];
-            if(col == 3) return list_TFL[row];
-            if(col == 4) return list_Description[row];
+            if(col == 0) return list_Counter[row];
+            if(col == 1) return list_ID[row];
+            if(col == 2) return list_TGL[row];
+            if(col == 3) return list_TAL[row];
+            if(col == 4) return list_TFL[row];
+            if(col == 5) return list_Description[row];
 
         case Qt::FontRole:
             if(row == 0 ||
@@ -82,21 +86,25 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
     {
         if (section == 0)
         {
-            return QString("Tool ID");
+            return QString("Nr");
         }
         else if (section == 1)
         {
-            return QString("GL");
+            return QString("Tool ID");
         }
         else if (section == 2)
         {
-            return QString("AL");
+            return QString("GL");
         }
         else if (section == 3)
         {
-            return QString("FL");
+            return QString("AL");
         }
         else if (section == 4)
+        {
+            return QString("FL");
+        }
+        else if (section == 5)
         {
             return QString("Beschreibung");
         }

@@ -67,7 +67,7 @@ bool Project_Saver::finish_Cleaning()
 bool Project_Saver::finish_BlankControl()
 {
     QStringList stringList_Content;
-    mfile->setFileName(string_Destination + "/_Sp1_Rohteilkontrolle.SPF");
+    mfile->setFileName(string_Destination + "/_Sp1_" + project->get_RohteilKontrolle() + ".SPF");
     if(!mfile->read_Content())
         return false;
     stringList_Content = mfile->get_Content();
@@ -91,9 +91,9 @@ bool Project_Saver::finish_Load()
                          string_ProjectFullName + ".WPD";
 
     /*Kopiert den Ordner Vorlagen.WPD/WKZ_beladen.WPD nach
-     * Programme/E123456789.WPD/E123456789_E0_Sp1.WPD/Sp1_WKZ_beladen.WPD*/
+     * Programme/E123456789.WPD/E123456789_E0_Sp1.WPD/E123456789_E0_Sp1_In.WPD*/
 
-    string_Loading_Destination = string_Destination + "/" + string_ProjectFullName + "_beladen.WPD";
+    string_Loading_Destination = string_Destination + "/" + string_ProjectFullName + "_In.WPD";
     string_Loading_Source      = QDir::homePath() + "/MainGen/Vorlage.WPD/WKZ_beladen.WPD";
 
     QDir dir_Vorlagen(string_Loading_Source);
@@ -102,13 +102,14 @@ bool Project_Saver::finish_Load()
     foreach (QString f, dir_Vorlagen.entryList(QDir::Files))
     {
         QFile::copy(QDir::homePath() + "/MainGen/Vorlage.WPD/WKZ_beladen.WPD" + QDir::separator() + f,
-                    string_Destination + "/" + string_ProjectFullName + "_beladen.WPD" + QDir::separator() + f);
+                    string_Destination + "/" + string_ProjectFullName + "_In.WPD" + QDir::separator() + f);
     }
 
+    // Lese den Inhalt der Datei WKZ_beladen_Kopf.spf in stringList_Head ein
+    // Das gleiche gilt für stringList_Body und stringList_End
     mfile->setFileName(QDir::homePath() + "/MainGen/Vorlagen/WKZ_beladen_Kopf.spf");
     if(!mfile->read_Content())
         return false;
-
     stringList_Head = mfile->get_Content();
 
     mfile->setFileName(QDir::homePath() + "/MainGen/Vorlagen/WKZ_beladen_Rumpf.spf");
@@ -116,18 +117,17 @@ bool Project_Saver::finish_Load()
         return false;
     stringList_Body = mfile->get_Content();
 
-
     mfile->setFileName(QDir::homePath() + "/MainGen/Vorlagen/WKZ_beladen_End.spf");
     if(!mfile->read_Content())
         return false;
     stringList_End = mfile->get_Content();
 
-    mfile->setFileName(string_Destination + "/" + string_ProjectFullName + "_beladen.WPD" + QDir::separator() + "_WKZ_beladen.spf");
-    //qDebug() << QString(string_Destination + "/" + string_ProjectFullName + "_beladen.WPD" + QDir::separator() + "_WKZ_beladen.spf");
+    mfile->setFileName(string_Destination + "/" + string_ProjectFullName + "_In.WPD" + QDir::separator() + "_WKZ_beladen.spf");
+
     /*Gehe durch die stringList_Kopf
-         * Schreibe string_Line in das File
-         * Wenn du zum Marker 'Werkzeugliste Anfang' kommst gehe durch die Liste
-         * der einzulagernden Werkzeuge. */
+     * Schreibe string_Line in das File
+     * Wenn du zum Marker 'Werkzeugliste Anfang' kommst gehe durch die Liste
+     * der einzulagernden Werkzeuge. */
     int count = 1;
     foreach(QString string_Line, stringList_Head)
     {
@@ -147,10 +147,10 @@ bool Project_Saver::finish_Load()
     }
 
     /*Geh durch die Liste der einzulagernden Werkzeuge
-         * Geh durch stringList_Rumpf
-         * Ersetze '$TNumber$ durch die ToolID und ToolBeschreibung
-         * Wenn die ToolID mit 29 beginnt (Einlippenbohrer) dann
-         * ersetze 'BRUCH' mit 'BRUCH2' */
+     * Geh durch stringList_Rumpf
+     * Ersetze '$TNumber$ durch die ToolID und ToolBeschreibung
+     * Wenn die ToolID mit 29 beginnt (Einlippenbohrer) dann
+     * ersetze 'BRUCH' mit 'BRUCH2' */
     foreach (Tool* tool, project->get_ToolList_IN()->getList())
     {
         foreach (QString string_Body, stringList_Body)
@@ -168,6 +168,7 @@ bool Project_Saver::finish_Load()
             count++;
         }
     }
+
     /*Geh durch stringList_End und schreib jede Zeile in das File*/
     foreach(QString string_Line, stringList_End)
     {
@@ -243,18 +244,28 @@ void Project_Saver::slot_nextProgramm()
 
     QFile::remove(string_ProgrammDir + QDir::separator() + string_Programm);
 
+    // Counter um eins hochzaehlen und Fortschrittbalken aktualisieren
     counter++;
     dialogProgress->update();
+
+    // Wenn Counterr kleiner als stringList_Programme.size eine halbe Sekunde warten,
+    // damit der Fortschrittbalken neu angezeigt wird, dann slot_nextProgramm neu aufrufen
     if(counter < stringList_Programme.size())
         timer->singleShot(500, this, SLOT(slot_nextProgramm()));
+
+
     else
     {
+        // Wenn die Nummerierung der Programme DEAKTIVIERT ist füge vor dem Hauptprgamm einen
+        // Unterstrich ein _E12345678_E1_Sp1.MPF
         if(!project->get_Numbering())
         {
             QFile::copy(string_ProgrammDir + QDir::separator() + string_ProjectFullName +".MPF",
                         string_Destination + QDir::separator() + "_" + string_ProjectFullName +".MPF");
             QFile::remove(string_ProgrammDir + QDir::separator() + string_ProjectFullName + ".MPF");
         }
+        // Wenn die Nummerierung der Programme AKTIVIERT ist füge vor dem Hauptprgamm "00_" ein
+        // 00_E12345678_E1_Sp1.MPF
         else
         {
             QFile::copy(string_ProgrammDir + QDir::separator() + string_ProjectFullName +".MPF",
@@ -262,6 +273,7 @@ void Project_Saver::slot_nextProgramm()
             QFile::remove(string_ProgrammDir + QDir::separator() + string_ProjectFullName + ".MPF");
         }
 
+        // Abschiessende Automatiesrung wie Antasten, Rohteilkontrolle und Reinigung für Spannung1
         if(project->get_ProjectClamping().contains("Sp1"))
         {
             if(!finish_Touch_Sp1())
@@ -270,9 +282,8 @@ void Project_Saver::slot_nextProgramm()
                 return;
             if(!finish_Cleaning())
                 return;
-            //finish_Rohteil_Kontrolle();
-            //finish_Reinigen();
         }
+
         if(!finish_Load())
             return;
 
@@ -320,51 +331,82 @@ void Project_Saver::slot_Save_Project(bool b)
                          string_ProjectFullName + ".WPD";
 
     string_Source = QDir::homePath() + "/MainGen/Vorlage.WPD/" + string_ProjectClamping + ".WPD";
+
     QDir dir_Vorlagen(string_Source);
-
-    /*Öffnet das File Programme/00_E123456789.MPF"
-     * Schreibt alles aus dem Reiter Hauptprgramm in das File*/
-
-    QString str = settings->get_ProgrammDir() + "/" + string_ProjectFullName +".MPF";
-
-    QFile file(str);
-    if(file.open(QFile::WriteOnly))
-    {
-        marker = keinMarker;
-        QTextStream stream(&file);
-        foreach(QString string_Line, stringList_Content_MainProgramm)
-        {
-            if(string_Line.contains("$KopfStart$"))
-            {
-                marker = KopfStart;
-                continue;
-            }
-
-            if(string_Line.contains("$KopfEnd$"))
-            {
-                marker = KopfEnd;
-                continue;
-            }
-
-            if(marker == KopfStart)
-            {
-                string_Line = formatString(string_Line);
-            }
-
-            stream << string_Line << "\n";
-        }
-        file.close();
-    }
-
-    /*Kopiert den Ordner Vorlagen.WPD/Spannung1.WPD nach
-     * Programme/E123456789.WPD/Spannung1.WPD*/
     dir_Vorlagen.mkpath(string_Destination);
-    foreach (QString f, dir_Vorlagen.entryList(QDir::Files))
-    {
-        QFile::copy(string_Source + QDir::separator() + f, string_Destination + QDir::separator() + f);
-    }
 
-    init_Saving();
+
+    if(!stringList_Programme.isEmpty())
+    {
+        /*Öffnet das File Programme/00_E123456789.MPF"
+        * Schreibt alles aus dem Reiter Hauptprgramm in das File*/
+        QString str = settings->get_ProgrammDir() + "/" + string_ProjectFullName +".MPF";
+
+        QFile file(str);
+        if(file.open(QFile::WriteOnly))
+        {
+            marker = keinMarker;
+            QTextStream stream(&file);
+            foreach(QString string_Line, stringList_Content_MainProgramm)
+            {
+                if(string_Line.contains("$KopfStart$"))
+                {
+                    marker = KopfStart;
+                    continue;
+                }
+
+                if(string_Line.contains("$KopfEnd$"))
+                {
+                    marker = KopfEnd;
+                    continue;
+                }
+
+                if(marker == KopfStart)
+                {
+                    string_Line = formatString(string_Line);
+                }
+
+                stream << string_Line << "\n";
+            }
+            file.close();
+        }
+
+        /* Kopiert den Ordner Vorlagen.WPD/Sp1.WPD nach
+         * Programme/E123456789.WPD/E123456789_E1_Sp1.WPD*/
+        QStringList stringList_Files = dir_Vorlagen.entryList(QDir::Files);
+        QStringList stringList_Temp;
+
+        // Durchsuche stringList_Files nach Einträgen die mit Rohteilkontrolle beginnen
+        // und speicher sie in stringList_Temp
+        foreach (QString str, stringList_Files)
+        {
+            if(str.contains("Rohteilkontrolle"))
+                stringList_Temp.append(str);
+        }
+
+        // geh stringList_Temp durch und lösche jeden Eintrag von stringList_Temp in
+        // stringList_Files
+        foreach (QString str, stringList_Temp)
+        {
+            stringList_Files.removeAll(str);
+        }
+
+        // Füge Rohteilkontrolle aus dem Project in stringList_Files
+        stringList_Files.append("_Sp1_" + project->get_RohteilKontrolle() + ".SPF");
+
+        // Kopiere alle Files aus stringList_Files ins ProjectVerzeichnis
+        foreach (QString f, stringList_Files)
+        {
+
+            QFile::copy(string_Source + QDir::separator() + f, string_Destination + QDir::separator() + f);
+        }
+        init_Saving();
+    }
+    else
+    {
+        if(!finish_Load())
+            return;
+    }
 
     return;
 }

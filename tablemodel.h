@@ -13,11 +13,12 @@ class TableModel : public QAbstractTableModel
 public:
     TableModel(QObject *parent = 0);
 
-    void populateData(const QList<QString> &contactName,
-                      const QList<QString> &contactPhone,
+    void populateData(const QList<QString> &id,
+                      const QList<QString> &description,
                       const QList<QString> &tgl,
                       const QList<QString> &tal,
-                      const QList<QString> &tfl);
+                      const QList<QString> &tfl,
+                      const QList<QString> &tcounter);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
@@ -31,6 +32,7 @@ private:
     QList<QString> list_TGL;
     QList<QString> list_TAL;
     QList<QString> list_TFL;
+    QList<QString> list_Counter;
 
 signals:
 

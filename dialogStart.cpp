@@ -7,6 +7,9 @@ DialogStart::DialogStart(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    dialogRohteilkontrolle = new DialogRohteilkontrolle(this);
+    connect(dialogRohteilkontrolle, SIGNAL(sig_New_Rohteilkontrolle(QString)), this,
+                                      SLOT(slot_New_RohteilKontrolle(QString)));
     paletteInValid = new QPalette();
     paletteInValid->setColor(QPalette::Text,Qt::red);
 
@@ -37,6 +40,8 @@ DialogStart::DialogStart(QWidget *parent) :
     }
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(slot_CheckInput()));
+    connect(ui->toolButton_Rohteilkontrolle, SIGNAL(released()), this, SLOT(slot_ShowRohteilkontrolle()));
+    connect(this, SIGNAL(rejected()), this, SLOT(slot_Rejected()));
     connect(ui->checkBox_RT_EinzelAufmass,SIGNAL(stateChanged(int)), this, SLOT(slot_checkBox_RT_AufmassEinzel_stateChanged(int)));
     connect(ui->checkBox_FT_EinzelAufmass,SIGNAL(stateChanged(int)), this, SLOT(slot_checkBox_FT_AufmassEinzel_stateChanged(int)));
     connect(ui->comboBox_Clamping, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_comboBox_NP_indexChanged(int)));
@@ -228,6 +233,7 @@ void DialogStart::slot_CheckInput()
     project->set_RohteilZ(ui->lineEdit_RTz->text());
 
 
+    project->set_ProjectZeroPoint(ui->lineEdit_NP->text());
     project->set_ZRohteil(QString("%1").arg(ui->doubleSpinBox_ZRohTeil->value()));
 
     switch (ui->comboBox_Clamping->currentIndex())
@@ -331,7 +337,7 @@ void DialogStart::slot_checkBox_FT_AufmassEinzel_stateChanged(int state)
 void DialogStart::setProject(Project* p)
 {
     project = p;
-
+    dialogRohteilkontrolle->setProject(p);
     ui->lineEdit_ProjectName->setText(project->get_ProjectName());
     ui->lineEdit_ProjectStatus->setText(project->get_ProjectStatus());
 
@@ -415,4 +421,20 @@ void DialogStart::slot_comboBox_NP_indexChanged(int i)
 {
     if(i < list_Keys.size())
         ui->lineEdit_NP->setText(map_NP[list_Keys[i]]);
+}
+
+void DialogStart::slot_Rejected()
+{
+    qDebug() << Q_FUNC_INFO;
+    project->logProjectData();
+}
+
+void DialogStart::slot_ShowRohteilkontrolle()
+{
+    dialogRohteilkontrolle->show();
+}
+
+void DialogStart::slot_New_RohteilKontrolle(QString str)
+{
+    ui->label_RohteilKontrolle->setText(str);
 }

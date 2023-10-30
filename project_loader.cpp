@@ -64,16 +64,19 @@ bool Project_Loader::add_Project(QString string_FileName, Project* project)
 
 bool Project_Loader::load_Project(QString string_FileName, Project* project)
 {
-    qDebug() << Q_FUNC_INFO;
     QStringList stringList_Split;
     QString string_TNumber;
     QStringList stringList_Parts;
     Tool* tool = new Tool(this);
     ToolList* toolList = project->get_ToolList();
 
-
+    // Zerlege den Dateinamen nach jedem "_" und schreibe die Einzeilstuecke
+    // in stringList_Split
     QFileInfo fileInfo = QFileInfo(string_FileName);
     stringList_Split = fileInfo.baseName().split("_");
+
+    // Wenn der Dateiname nicht nach dem Muster E1234567_E1_Sp1_0 aufgebaut ist
+    // gib eine Fehlermeldung aus und brech die Funktion ab
     if(stringList_Split.size() < 4)
     {
         emit sig_Err("----------------------------------------------------------------");
@@ -86,6 +89,10 @@ bool Project_Loader::load_Project(QString string_FileName, Project* project)
         return false;
     }
 
+    // Übernehm aus dem aufgeteilten Dateinamen den
+    // Projektname, Projektstatus und die Spannung
+    // Erzeuge für das Projekt den ProjectFullName
+    // Aktualisiere die Wiederholfertigung aus der Datenbank
     project->set_ProjectName(stringList_Split.at(0));
     project->set_ProjectStatus(stringList_Split.at(1));
     project->set_ProjectClamping(stringList_Split.at(2));
@@ -94,13 +101,14 @@ bool Project_Loader::load_Project(QString string_FileName, Project* project)
 
     toolList->clear();
 
+    //Lese die Datei ein
     mfile->setFileName(string_FileName);
     if(!mfile->read_Content())
         return false;
 
+    //Geh durch die Datei und Schreib die Werkzeuge in die toolList
     foreach(QString string_Line, mfile->get_Content())
     {
-        //qDebug() << string_Line;
         stringList_Parts = string_Line.split("||");
         if(stringList_Parts.size() >= 4)
         {
@@ -112,14 +120,16 @@ bool Project_Loader::load_Project(QString string_FileName, Project* project)
             tool->set_ToolGL(stringList_Parts.at(2));
             tool->set_ToolAL(stringList_Parts.at(3));
             tool->set_ToolFL(dbManager->getFreistellLaenge(string_TNumber));
-            //string_TDescription = stringList_Parts.at(1);
             tool->set_Description(dbManager->getDescription(string_TNumber));
             tool->set_HalterName(dbManager->getHolder(string_TNumber));
             toolList->insert_Tool(tool);
-            //sig_Log(Q_FUNC_INFO + string_TNumber + QString(" | ") + tool->get_HalterName());
         }
     }
+
+    // Sortiere die ToolList nach der Werkzeugnummer
     toolList->sort_ID();
+
+    // Schreibe das Logfile
     project->logProjectData();
 
     return true;

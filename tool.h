@@ -18,7 +18,7 @@ private:
     QString freistellLaenge;
     QString halterName;
     QString halterComment;
-
+    QString schneidLange;
 
 
     int counter;
@@ -47,6 +47,8 @@ public:
     void set_State(State s)             {state = s;}
     State get_State()                   {return state;}
     QString get_StateString();
+    void set_SchneidLange(QString s)    {schneidLange = s;}
+    QString get_SchneidLange()          {return schneidLange;}
     void clear();
 
 signals:
