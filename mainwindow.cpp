@@ -108,6 +108,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(project_Loader, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
     connect(project_Loader, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
 
+    //touchProbe
+    ui->tab_TouchProbe->setProject(project);
     //mfile initialisieren und Connection herstellen
     mfile = new MFile(this);
     connect(mfile, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
@@ -133,6 +135,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tab_C_Algin->setProject(project);
     connect(ui->tab_C_Algin, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
     connect(ui->tab_C_Algin, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
+
+    // connect TouchProbe
+    connect(ui->tab_TouchProbe, SIGNAL(sig_Err(QString)), this, SLOT(slot_Err(QString)));
+    connect(ui->tab_TouchProbe, SIGNAL(sig_Log(QString)), this, SLOT(slot_Log(QString)));
 
     //connect Ruestplan
     connect(ui->tableView_Rustplan, SIGNAL(clicked(const QModelIndex &)), this, SLOT(slot_TableClicked(const QModelIndex &)));
@@ -722,6 +728,7 @@ void MainWindow::slot_Export(bool b)
 
 void MainWindow::slot_RestoreDatabase(bool b)
 {
+        qDebug() << Q_FUNC_INFO;
         Q_UNUSED(b);
         dbManager->restore();
 }
@@ -756,7 +763,7 @@ void MainWindow::slot_startApplication()
     return;
   }
 
-  dialogStart->setProject(project);
+    dialogStart->setProject(project);
 
   /* Lade die Nullpunkte in den DialogStart
    * Wenn das fehlschlägt brich die Funktion ab */
@@ -784,6 +791,8 @@ void MainWindow::slot_startApplication()
   dbManager->getTop100(toolList_Top100);
   //showTable_Top100();
 
+  ui->tab_TouchProbe->insert_Item();
+  dialogStart->setProjectData();
   dialogStart->show();
 }
 

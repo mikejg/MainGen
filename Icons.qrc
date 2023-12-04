@@ -43,5 +43,38 @@
         <file>Icons/TouchProbe/Y_Plus1.png</file>
         <file>Icons/TouchProbe/Z_Minus1.png</file>
         <file>Icons/TouchProbe/X_Plus2.png</file>
+        <file>Icons/TouchProbe/X_Minus2.png</file>
+        <file>Icons/TouchProbe/Y_Minus2.png</file>
+        <file>Icons/TouchProbe/Y_Plus2.png</file>
+        <file>Icons/TouchProbe/Z_Minus2.png</file>
+        <file>Icons/TouchProbe/X_Plus3.png</file>
+        <file>Icons/TouchProbe/X_Minus3.png</file>
+        <file>Icons/TouchProbe/Z_Minus3.png</file>
+        <file>Icons/TouchProbe/create.png</file>
+        <file>Icons/TouchProbe/Picture.png</file>
+        <file>Icons/TouchProbe/Y_Plus3.png</file>
+        <file>Icons/TouchProbe/Y_Minus3.png</file>
+        <file>Icons/TouchProbe/Ausrichten_XPlus1.png</file>
+        <file>Icons/TouchProbe/Ausrichten_XPlus2.png</file>
+        <file>Icons/TouchProbe/Ausrichten_ZMinus1.png</file>
+        <file>Icons/TouchProbe/Ausrichten_ZMinus2.png</file>
+        <file>Icons/TouchProbe/Ausrichten_XMinus1.png</file>
+        <file>Icons/TouchProbe/Ausrichten_XMinus2.png</file>
+        <file>Icons/TouchProbe/Ausrichten_YMinus1.png</file>
+        <file>Icons/TouchProbe/Ausrichten_YMinus2.png</file>
+        <file>Icons/TouchProbe/Ausrichten_YPlus1.png</file>
+        <file>Icons/TouchProbe/Ausrichten_YPlus2.png</file>
+        <file>Icons/TouchProbe/Steg_DFA.png</file>
+        <file>Icons/TouchProbe/Steg_X1.png</file>
+        <file>Icons/TouchProbe/Steg_X2.png</file>
+        <file>Icons/TouchProbe/Steg_Y1.png</file>
+        <file>Icons/TouchProbe/Steg_Y2.png</file>
+        <file>Icons/TouchProbe/Steg_X3.png</file>
+        <file>Icons/TouchProbe/Steg_Y3.png</file>
+        <file>Icons/TouchProbe/Ebene.png</file>
+        <file>Icons/TouchProbe/Ebenheit_01.png</file>
+        <file>Icons/TouchProbe/Bohrung.png</file>
+        <file>Icons/TouchProbe/Bohrung01.png</file>
+        <file>Icons/TouchProbe/Bohrung02.png</file>
     </qresource>
 </RCC>

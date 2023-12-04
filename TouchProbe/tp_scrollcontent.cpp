@@ -185,13 +185,31 @@ void TP_ScrollContent::mousePressEvent(QMouseEvent *event)
 }
 
 
-void TP_ScrollContent::insert_Item(QString str)
+void TP_ScrollContent::slot_InsertItem()
 {
     layout->removeItem(spacerItem);
     tp_Item = new TP_Item(this);
-    tp_Item->setText(str);
-    layout->addWidget(tp_Item);
-    item_List.append(tp_Item);
-    layout->addItem(spacerItem);
+
+    connect(tp_Item, SIGNAL(sig_Err(QString)), this, SIGNAL(sig_Err(QString)));
+    connect(tp_Item, SIGNAL(sig_Log(QString)), this, SIGNAL(sig_Log(QString)));
     connect(tp_Item, SIGNAL(sig_NewPixmap(QPixmap)), this, SIGNAL(sig_NewPixmap(QPixmap)));
+    connect(tp_Item, SIGNAL(sig_DeleteItem(TP_Item*)), this, SLOT(slot_DeleteItem(TP_Item*)));
+
+    layout->addWidget(tp_Item);
+    layout->addItem(spacerItem);
+    item_List.append(tp_Item);
+
+    tp_Item->read_Anfahren();
+    tp_Item->setText("Neues Item");
+    connect(tp_Item, SIGNAL(sig_NewItem()), this, SLOT(slot_InsertItem()));
+}
+
+void TP_ScrollContent::slot_DeleteItem(TP_Item* tp_Item)
+{
+    //layout->removeWidget(tp_Item);
+    if(item_List.contains(tp_Item))
+    {
+       item_List.removeOne(tp_Item);
+       delete tp_Item;
+    }
 }

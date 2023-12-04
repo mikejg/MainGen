@@ -93,6 +93,7 @@ bool Project_Loader::load_Project(QString string_FileName, Project* project)
     // Projektname, Projektstatus und die Spannung
     // Erzeuge für das Projekt den ProjectFullName
     // Aktualisiere die Wiederholfertigung aus der Datenbank
+    project->clear();
     project->set_ProjectName(stringList_Split.at(0));
     project->set_ProjectStatus(stringList_Split.at(1));
     project->set_ProjectClamping(stringList_Split.at(2));

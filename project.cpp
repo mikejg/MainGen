@@ -15,8 +15,9 @@ Project::Project(QObject *parent)
 
 void Project::clear()
 {
-
+    stringList_Prg.clear();
 }
+
 void Project::frame_Error(QStringList stringList_Errors)
 {
     /* Zieht einen ASCII Rahmen um die Fehlermeldungen */
@@ -164,6 +165,8 @@ bool Project::loadProjectData()
 
     if(!sort_Programms())
         return false;
+
+
     return true;
 }
 
@@ -369,4 +372,47 @@ bool Project::sort_Programms()
     }
 
     return true;
+}
+
+QMap<QString, QString> Project::get_Data()
+{
+    qDebug() << Q_FUNC_INFO;
+    qDebug() << string_RTx << string_RTy << string_RTz;
+    QMap<QString, QString> map_Data;
+
+    map_Data.insert("Name", string_ProjectName);
+    map_Data.insert("Status", string_ProjectStatus);
+    map_Data.insert("Clamping", string_ProjectClamping);
+
+    map_Data.insert("Rohteil_X", string_RTx);
+    map_Data.insert("Rohteil_Y", string_RTy);
+    map_Data.insert("Rohteil_Z", string_RTz);
+
+    map_Data.insert("Bauteil_X", string_BTx);
+    map_Data.insert("Bauteil_Y", string_BTy);
+    map_Data.insert("Bauteil_Z", string_BTy);
+
+    map_Data.insert("Antastp_Z", string_ZRT);
+    map_Data.insert("Nullpunkt", string_ProjectZeroPoint);
+    map_Data.insert("Material", string_Material);
+
+    return map_Data;
+}
+
+void Project::setData()
+{
+    QMap<QString, QString> map_Data = dbManager->getProjectData(string_ProjectName, string_ProjectClamping);
+    string_RTx = map_Data.value("Rohteil_X");
+    string_RTy = map_Data.value("Rohteil_Y");
+    string_RTz = map_Data.value("Rohteil_Z");
+
+    string_BTx = map_Data.value("Bauteil_X");
+    string_BTy = map_Data.value("Bauteil_Y");
+    string_BTz = map_Data.value("Bauteil_Z");
+
+    string_ZRT = map_Data.value("Antastpunkt_Z");
+    string_Material = map_Data.value("Material");
+
+    qDebug() << string_Material;
+
 }

@@ -84,6 +84,7 @@ public:
 
     //void setSettings(QSettings* s);
     void setProject(Project*);
+    void setProjectData();
     bool load_Material();
     bool load_ZeroPoint();
 

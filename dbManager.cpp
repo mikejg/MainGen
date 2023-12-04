@@ -262,7 +262,7 @@ QString DBManager::getHolder(QString toolID)
     return string_Holder;
 }
 
-QString DBManager::insertRuestplan(QString string_Ruestplan)
+QString DBManager::insertRuestplan(QString string_Ruestplan, QString string_ProjectID)
 {
     /*Öffnet Hauptdatenbank*/
     if(!openMainDB())
@@ -289,8 +289,9 @@ QString DBManager::insertRuestplan(QString string_Ruestplan)
     emit sig_Log(string_Log);
 
     QSqlQuery queryAdd;
-    queryAdd.prepare("INSERT INTO Ruestplan (name) VALUES (:name)");
+    queryAdd.prepare("INSERT INTO Ruestplan (name, Project_id) VALUES (:name, :Project_id)");
     queryAdd.bindValue(":name", string_Ruestplan);
+    queryAdd.bindValue(":Project_id", string_ProjectID);
 
     if(queryAdd.exec())
     {
@@ -313,6 +314,59 @@ QString DBManager::insertRuestplan(QString string_Ruestplan)
 
     return string_RuestplanId;
 }
+
+QString DBManager::insertRuestplan(QString string_Ruestplan)
+{
+    /*Öffnet Hauptdatenbank*/
+    if(!openMainDB())
+        return "";
+
+    QString string_RuestplanId;
+
+    /*Suche in der Datenbank nach dem Rüstplan
+     * wenn der Rüstplan schon in der Datenbank existiert,
+     * wird die ID zurückgeben*/
+    QSqlQuery query("SELECT id, name from Ruestplan "
+                    "where name = '" + string_Ruestplan + "';");
+
+    while (query.next())
+    {
+        string_RuestplanId = query.value("id").toString();
+    }
+
+    if(!string_RuestplanId.isEmpty())
+        return string_RuestplanId;
+
+    /*Erstelle in der Tabelle Ruestplan einen neuen Eintrag*/
+    string_Log = Q_FUNC_INFO + QString(": keine Rüstplan ID gefunden") ;
+                 emit sig_Log(string_Log);
+
+    QSqlQuery queryAdd;
+    queryAdd.prepare("INSERT INTO Ruestplan (name) VALUES (:name)");
+    queryAdd.bindValue(":name", string_Ruestplan);
+
+    if(queryAdd.exec())
+    {
+        string_Log = Q_FUNC_INFO + QString(" Ruestplan: " + string_Ruestplan + " eingefügt");
+                     emit sig_Log(string_Log);
+    }
+    else
+    {
+        string_Log = Q_FUNC_INFO + QString(" Ruestplan: " + string_Ruestplan + " einfügen fehlgeschlagen");
+                     emit sig_Err(string_Log);
+        return "";
+    }
+
+    /*Suche nochmal in der Datenbank nach dem Rüstplan und gib die ID zurück*/
+    query.exec();
+    while (query.next())
+    {
+        string_RuestplanId = query.value("id").toString();
+    }
+
+    return string_RuestplanId;
+}
+
 
 void DBManager::insertTool(Tool* tool, QString string_RuestplanID, QString string_RuestplanName)
 {
@@ -358,7 +412,7 @@ void DBManager::insertTool(Tool* tool, QString string_RuestplanID, QString strin
     if(queryAdd.exec())
     {
         string_Log = Q_FUNC_INFO + QString(" " + tool->get_Number() + " - " + string_RuestplanName + " eingefügt");
-        emit sig_Log(string_Log);
+        //emit sig_Log(string_Log);
     }
     else
     {
@@ -461,6 +515,81 @@ QString DBManager::insertTool(Tool* tool)
     }
 
     return string_ToolID;
+}
+
+QString DBManager::addProject(QMap<QString, QString> map_Data)
+{
+    /*Öffnet Hauptdatenbank*/
+    if(!openMainDB())
+        return "";
+
+    QString string_ProjectID;
+
+    /*Suche nach dem Project in der Datenbank,
+     * wenn das Project schon in der Datenbank existiert,
+     * wird die ID zurückgeben*/
+    QSqlQuery query("SELECT id, Name, Status, Clamping from Project "
+                    "where Name = '" + map_Data.value("Name") + "' "
+                    "and Clamping = '" + map_Data.value("Clamping") + "';");
+
+    while (query.next())
+    {
+        string_ProjectID = query.value("id").toString();
+    }
+
+    if(!string_ProjectID.isEmpty())
+        return string_ProjectID;
+
+
+    QSqlQuery queryAdd;
+    queryAdd.prepare("INSERT INTO Project (Name, Status, Clamping, "
+                     "Rohteil_X, Rohteil_Y, Rohteil_Z, "
+                     "Bauteil_X, Bauteil_Y, Bauteil_Z, "
+                     "Antastpunkt_Z, Nullpunkt, Material) "
+                     "VALUES (:Name, :Status, :Clamping, "
+                     ":Rohteil_X, :Rohteil_Y, :Rohteil_Z, "
+                     ":Bauteil_X, :Rohteil_Y, :Bauteil_Z, "
+                     ":Antastpunkt_Z, :Nullpunkt, :Material)");
+
+    queryAdd.bindValue(":Name", map_Data.value("Name"));
+    queryAdd.bindValue(":Status", map_Data.value("Status"));
+    queryAdd.bindValue(":Clamping", map_Data.value("Clamping"));
+
+    queryAdd.bindValue(":Rohteil_X", map_Data.value("Rohteil_X"));
+    queryAdd.bindValue(":Rohteil_Y", map_Data.value("Rohteil_Y"));
+    queryAdd.bindValue(":Rohteil_Z", map_Data.value("Rohteil_Z"));
+
+    queryAdd.bindValue(":Bauteil_X", map_Data.value("Bauteil_X"));
+    queryAdd.bindValue(":Bauteil_Y", map_Data.value("Bauteil_Y"));
+    queryAdd.bindValue(":Bauteil_Z", map_Data.value("Bauteil_Z"));
+
+    queryAdd.bindValue(":Antastpunkt_Z", map_Data.value("Antastp_Z"));
+    queryAdd.bindValue(":Nullpunkt", map_Data.value("Nullpunkt"));
+    queryAdd.bindValue(":Material", map_Data.value("Material"));
+
+    if(queryAdd.exec())
+    {
+        //qDebug() << "Tool: " << tool->get_Number() << " eingefügt";
+
+    }
+    else
+    {
+        string_Log = Q_FUNC_INFO + QString(" Project einfuegen fehlgeschlagen: ");
+        emit sig_Err(string_Log);
+        string_Log = Q_FUNC_INFO + QString(" " + queryAdd.lastQuery());
+        emit sig_Err(string_Log);
+        string_Log = Q_FUNC_INFO + QString(" " + queryAdd.lastError().text());
+        emit sig_Err(string_Log);
+        return "";
+    }
+
+    query.exec();
+    while (query.next())
+    {
+        string_ProjectID = query.value("id").toString();
+    }
+
+    return string_ProjectID;
 }
 
 QString DBManager::insertHolder(QString string_HolderName)
@@ -580,6 +709,25 @@ bool DBManager::openWerkzeugDB()
     return true;
 }
 
+void DBManager::insertProject(QString string_RuestplanName, ToolList* toolList, QMap<QString,QString> map_Data)
+{
+    /*Öffnet die Hauptdatenbank*/
+    if(!openMainDB())
+        return;
+
+    QString string_ProjectID = addProject(map_Data);
+
+    /*Rüstplan wir in der Datenbank erstellt und die ID zurückgegeben*/
+    QString string_RuestplanID = insertRuestplan(string_RuestplanName, string_ProjectID);
+
+
+    /*Trage alle Werkzeuge aus der ToolList in die Datenbank ein*/
+    foreach(Tool* tool, toolList->getList())
+    {
+        insertTool(tool, string_RuestplanID, string_RuestplanName);
+    }
+}
+
 void DBManager::insertProject(QString string_RuestplanName, ToolList* toolList)
 {
     /*Öffnet die Hauptdatenbank*/
@@ -605,7 +753,7 @@ int DBManager::getWiederholFertigung(QString string_Projekt)
         return -1;
 
     QSqlQuery query("select name from Ruestplan where name like '" + string_Projekt + "%';");
-    qDebug() << query.lastQuery();
+    //qDebug() << query.lastQuery();
 
     //QSqlQuery query("select name from Ruestplan;");
 
@@ -654,6 +802,7 @@ void DBManager::restore()
 
 void DBManager::slot_InsertRPL()
 {
+
     QString str = stringList_Rustplane.at(counter);
     //QString string_RuestplanID;
 
@@ -687,7 +836,7 @@ void DBManager::slot_InsertRPL()
 
     toolList->clear();
 
-    /*Übergibt dem DBManager den Projektnamen und die toolList zum Eintragen*/
+    //Übergibt dem DBManager den Projektnamen und die toolList zum Eintragen
     if(parse_Rustplan(str))
         insertProject(string_Project + "_" + string_WiederholFertigung, toolList);
 
@@ -697,6 +846,7 @@ void DBManager::slot_InsertRPL()
         timer->singleShot(500, this, SLOT(slot_InsertRPL()));
     else
         dialogProgress->hide();
+
 }
 
 bool DBManager::parse_Rustplan(QString string_FileName)
@@ -735,4 +885,38 @@ bool DBManager::parse_Rustplan(QString string_FileName)
     }
 
     return true;
+}
+
+QMap<QString, QString> DBManager::getProjectData(QString string_Name, QString string_Clamping)
+{
+    QMap<QString, QString> map_Data;
+
+    /*Öffnet Hauptdatenbank*/
+    if(!openMainDB())
+        return map_Data;
+
+    /*Suche nach dem Project in der Datenbank*/
+    QSqlQuery query("SELECT * from Project "
+                    "WHERE Name = '" + string_Name + "' "
+                    "AND Clamping = '" + string_Clamping + "';");
+
+    qDebug() << query.lastQuery();
+
+    while (query.next())
+    {
+        map_Data.insert("Name", query.value("Name").toString());
+        map_Data.insert("Status", query.value("Status").toString());
+        map_Data.insert("Nullpunkt", query.value("Nullpunkt").toString());
+        map_Data.insert("Clamping", query.value("Clamping").toString());
+        map_Data.insert("Antastpunkt_Z", query.value("Antastpunkt_Z").toString());
+        map_Data.insert("Material", query.value("Material").toString());
+        map_Data.insert("Rohteil_X", query.value("Rohteil_X").toString());
+        map_Data.insert("Rohteil_Y", query.value("Rohteil_Y").toString());
+        map_Data.insert("Rohteil_Z", query.value("Rohteil_Z").toString());
+        map_Data.insert("Bauteil_X", query.value("Bauteil_X").toString());
+        map_Data.insert("Bauteil_Y", query.value("Bauteil_Y").toString());
+        map_Data.insert("Bauteil_Z", query.value("Bauteil_Z").toString());
+    }
+
+    return map_Data;
 }

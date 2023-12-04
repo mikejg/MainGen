@@ -35,7 +35,7 @@ public:
     ~TP_ScrollContent();
     void set_Layout(QVBoxLayout* l) {layout = l;}
     void set_SpacerItem(QSpacerItem* si) {spacerItem = si;}
-    void insert_Item(QString);
+    QList<TP_Item*> get_ItemList() {return item_List;}
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event) override;
@@ -43,8 +43,14 @@ protected:
     void dropEvent(QDropEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
 
+public slots:
+    void slot_InsertItem();
+    void slot_DeleteItem(TP_Item*);
+
 signals:
     void sig_NewPixmap(QPixmap);
+    void sig_Err(QString);
+    void sig_Log(QString);
 };
 
 #endif // TP_SCROLLCONTENT_H

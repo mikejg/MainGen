@@ -10,6 +10,7 @@
 #include "toollist.h"
 #include "mfile.h"
 
+
 class DBManager : public QObject
 {
     Q_OBJECT
@@ -37,6 +38,7 @@ public:
     explicit DBManager(QObject *parent = nullptr);
     ~DBManager();
 
+    QString addProject(QMap<QString,QString>);
     void    clearDB();
 
     QString getGesamtLaenge(QString);
@@ -48,15 +50,19 @@ public:
     void    getTop100(ToolList*);
     int     getWiederholFertigung(QString);
 
+    QString insertRuestplan(QString, QString);
     QString insertRuestplan(QString);
     void    insertTool(Tool*, QString, QString);
     QString insertTool (Tool*);
     QString insertHolder(QString);
+    void    insertProject(QString, ToolList*, QMap<QString,QString>);
     void    insertProject(QString, ToolList*);
     void    open();
     void    restore();
     void    set_DialogProgress(DialogProgress* dp) {dialogProgress = dp;}
     QStringList getToolData(QString);
+    QMap<QString, QString> getProjectData(QString, QString);
+
 signals:
     void sig_Log(QString);
     void sig_Err(QString);

@@ -430,7 +430,7 @@ QString C_Algin::replace_Comma(QString str)
     while(returnString.endsWith("0") && returnString.contains("."))
     {
        returnString = returnString.left(returnString.length()-1);
-       qDebug() << returnString;
+       //qDebug() << returnString;
     }
     return returnString;
 }

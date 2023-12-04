@@ -135,6 +135,8 @@ public:
     void set_Settings(Settings* s);
     bool sort_Programms();
     void clear();
+    QMap<QString, QString> get_Data();
+    void setData();
 
 signals:
     void sig_Err(QString);

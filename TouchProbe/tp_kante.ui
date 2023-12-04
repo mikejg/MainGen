@@ -36,7 +36,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QComboBox" name="comboBox">
+    <widget class="QComboBox" name="comboBox_Frame">
      <item>
       <property name="text">
        <string>Oben</string>
@@ -362,6 +362,12 @@
          <height>20</height>
         </size>
        </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
       </widget>
      </item>
      <item>
@@ -408,6 +414,12 @@
          <height>20</height>
         </size>
        </property>
+       <property name="text">
+        <string>10</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
       </widget>
      </item>
      <item>
@@ -453,6 +465,12 @@
          <width>75</width>
          <height>20</height>
         </size>
+       </property>
+       <property name="text">
+        <string>0.500</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>

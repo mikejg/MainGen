@@ -345,8 +345,26 @@ void DialogStart::setProject(Project* p)
     {
         ui->groupBox_AufmassMaxRT->setTitle("Aufmass Max vom Bauteil");
     }
+    project->setData();
+
 }
 
+void DialogStart::setProjectData()
+{
+    ui->lineEdit_RTx->setText(project->get_RohteilX());
+    ui->lineEdit_RTy->setText(project->get_RohteilY());
+    ui->lineEdit_RTz->setText(project->get_RohteilZ());
+
+    ui->lineEdit_BTx->setText(project->get_BauteilX());
+    ui->lineEdit_BTy->setText(project->get_BauteilY());
+    ui->lineEdit_BTz->setText(project->get_BauteilZ());
+
+    double double_AZ = project->get_ZRohteil().toDouble();
+    ui->doubleSpinBox_ZRohTeil->setValue(double_AZ);
+
+
+    ui->comboBox_Material->setCurrentText(project->get_Material());
+}
 bool DialogStart::load_Material()
 {
     //Einlesen der Materialien

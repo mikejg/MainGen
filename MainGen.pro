@@ -10,6 +10,9 @@ CONFIG += c++17
 
 SOURCES += \
     TouchProbe/touchprobe.cpp \
+    TouchProbe/tp_ausrichten.cpp \
+    TouchProbe/tp_bohrung.cpp \
+    TouchProbe/tp_ebenheit.cpp \
     TouchProbe/tp_scrollcontent.cpp \
     TouchProbe/tp_base.cpp \
     TouchProbe/tp_item.cpp \
@@ -41,6 +44,9 @@ SOURCES += \
 
 HEADERS += \
     TouchProbe/touchprobe.h \
+    TouchProbe/tp_ausrichten.h \
+    TouchProbe/tp_bohrung.h \
+    TouchProbe/tp_ebenheit.h \
     TouchProbe/tp_scrollcontent.h \
     TouchProbe/tp_base.h \
     TouchProbe/tp_item.h \
@@ -71,6 +77,9 @@ HEADERS += \
 
 FORMS += \
     TouchProbe/touchprobe.ui \
+    TouchProbe/tp_ausrichten.ui \
+    TouchProbe/tp_bohrung.ui \
+    TouchProbe/tp_ebenheit.ui \
     TouchProbe/tp_scrollcontent.ui \
     TouchProbe/tp_base.ui \
     TouchProbe/tp_item.ui \

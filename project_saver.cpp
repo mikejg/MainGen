@@ -296,7 +296,9 @@ void Project_Saver::slot_nextProgramm()
                 return;
             dbManager->insertProject(project->get_ProjectFullName() + "_"
                                      + QString("%1").arg(project->get_RepetitiveManufacturing()),
-                                     project->get_ToolList());
+                                     project->get_ToolList(),
+                                     project->get_Data());
+
 
         }
         dialogProgress->hide();
