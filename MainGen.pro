@@ -43,6 +43,7 @@ SOURCES += \
     license.cpp
 
 HEADERS += \
+    TouchProbe/TP_Struct.h \
     TouchProbe/touchprobe.h \
     TouchProbe/tp_ausrichten.h \
     TouchProbe/tp_bohrung.h \

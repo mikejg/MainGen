@@ -4,6 +4,7 @@
 #include <QFrame>
 #include <QPixmap>
 #include "mfile.h"
+#include "TP_Struct.h"
 
 namespace Ui {
 class TP_Item;
@@ -34,6 +35,7 @@ private:
     void hideAll();
 
     State state;
+    Struct_Ausrichten struct_Ausrichten;
 
 public slots:
     void slot_Fold_In();

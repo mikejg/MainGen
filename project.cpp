@@ -376,8 +376,7 @@ bool Project::sort_Programms()
 
 QMap<QString, QString> Project::get_Data()
 {
-    qDebug() << Q_FUNC_INFO;
-    qDebug() << string_RTx << string_RTy << string_RTz;
+    //schreibe alle Parameter in eine Map und gib sie zurück
     QMap<QString, QString> map_Data;
 
     map_Data.insert("Name", string_ProjectName);
@@ -401,7 +400,10 @@ QMap<QString, QString> Project::get_Data()
 
 void Project::setData()
 {
+    //lade die Daten für das Projekt aus der Datenbank
     QMap<QString, QString> map_Data = dbManager->getProjectData(string_ProjectName, string_ProjectClamping);
+
+    //schreibe die Daten aus der Map in die Parameter
     string_RTx = map_Data.value("Rohteil_X");
     string_RTy = map_Data.value("Rohteil_Y");
     string_RTz = map_Data.value("Rohteil_Z");
@@ -412,7 +414,5 @@ void Project::setData()
 
     string_ZRT = map_Data.value("Antastpunkt_Z");
     string_Material = map_Data.value("Material");
-
-    qDebug() << string_Material;
 
 }

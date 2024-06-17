@@ -7,13 +7,12 @@
 #include "settings.h"
 #include "toollist.h"
 #include "parser_programm.h"
+#include "TouchProbe/tp_item.h"
 
 class Project : public QObject
 {
     Q_OBJECT
 private:
-
-
     Settings* settings;
 
     QString string_ProgrammDir;
@@ -46,6 +45,7 @@ private:
     int              int_RepetitiveManufacturing;
     ToolList*        toolList;
     ToolList*        toolList_IN;
+    QList<TP_Item*> item_List;
 
 public:
     explicit Project(QObject *parent = nullptr);
@@ -137,6 +137,7 @@ public:
     void clear();
     QMap<QString, QString> get_Data();
     void setData();
+    void set_ItemList(QList<TP_Item*> il) { item_List = il;}
 
 signals:
     void sig_Err(QString);

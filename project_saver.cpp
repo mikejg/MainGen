@@ -287,6 +287,7 @@ void Project_Saver::slot_nextProgramm()
         if(!finish_Load())
             return;
 
+        // Wenn es die Erst- bzw Wiederholfertigung ist speicher den Rüstplan und das Projekt in die Datenbank
         if(bool_Repetition)
         {
             if(!save_Rustplan(QDir::homePath()+ "/MainGen/Ruestplaene/"
@@ -313,7 +314,7 @@ void Project_Saver::slot_Save_Project(bool b)
     stringList_Content_MainProgramm = project->get_Content_MainProgramm();
 
     string_ProgrammDir     = project->get_ProgrammDir();
-    string_ProjectName =     project->get_ProjectName();
+    string_ProjectName     = project->get_ProjectName();
     string_ProjectFullName = project->get_ProjectFullName();
     string_ProjectClamping = project->get_ProjectClamping();
 

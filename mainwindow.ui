@@ -186,15 +186,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>C_Algin</class>
+   <class>Magazin</class>
    <extends>QWidget</extends>
-   <header>c_algin.h</header>
+   <header>Magazin/magazin.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>Magazin</class>
+   <class>C_Algin</class>
    <extends>QWidget</extends>
-   <header location="global">magazin.h</header>
+   <header>c_algin.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
